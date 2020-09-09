@@ -36,7 +36,7 @@ class KMeans:
             return
         
         best_iter = np.Inf
-        for itera in range(iterations):
+        for _ in range(iterations):
             cost = 0
             distance = {}
             labels = np.array([0] * data.shape[0])
@@ -50,26 +50,31 @@ class KMeans:
 
             #training until centroids don't change or max-iter is reached
             while ( iteration < max_iter and change ):
+                #calculating distances between points and centroids
                 for index, point in enumerate(data):
                     distance[index] = []
                     for center in centroids:
                         distance[index].append(np.linalg.norm(point - center))
+                    #choosing the right label for each point
                     labels[index] = np.argmin(distance[index])
 
-
-
+                #updating centroids
                 for center in range(k):
                     same_label = data[labels == center]
                     new_centroids[center] = np.mean(same_label, axis = 0)
+
+                #checking if the clustering converged and break the loop if true
                 if (new_centroids == centroids).all():
                     change = False
                 else:
                     centroids = new_centroids.copy()
                 iteration +=1
 
+            #calculating cost function (sum over the distance between each point to its corresponiding centroid)
             for index , point in enumerate(data):
                 cost += np.linalg.norm(point - centroids[labels[index]])
-                
+
+            #choosing the best clustering based on cost function.
             if cost < best_iter:
                 self.cost = cost
                 self.labels = labels
@@ -90,13 +95,17 @@ class KMeans:
         Returns: a dictionary including cost functions for each k.
         """       
         costs = {}
+
+        #check if there is no input for max_k
         if max_k == None:
             max_k = data.shape[0]
-        
-        if max_k > data.shape[0]:
-            print("maximum number of clusters can not be more than the number of data points.")
+
+        #check the boundrary of max_k
+        if max_k > data.shape[0] or max_k < min_k:
+            print("maximum number of clusters can not be more than the number of data points.\nmaximum number of clusters can not be less than minimum number of clusters.")
             return
-        
+
+        #running the model for each K and compute the cost function and store it in an array.
         for k in range(min_k, max_k + 1):
             self.train(data, k, max_iter = max_iter)
             costs[k] = self.cost
@@ -105,33 +114,40 @@ class KMeans:
             
 
 def kmeans_func(data, k = 2, iterations = 10, max_iter = 100):
+    """
+    Usage: This function is actually is the same as the class. you can use this API instead of instantiating the KMeans class.
+
+    Inputs:
+        data     : data that traines the model. it should be a numpy ndarray (specifically 2darray).
+        k        : number of clusters
+        iteration: number of iteration in total to find the best clusters.
+        max_iter : number of maximum iteration if the centroids are still not to be found.
+
+    Returns: a numpy array including the labels for each data label.
+    """
     if (len(data.shape) != 2):
         print("Only 2darray")
         return -1
 
     best_iter = np.Inf
-    for itera in range(iterations):
+    for _ in range(iterations):
         cost = 0
         distance = {}
         labels = np.array([0] * data.shape[0])
         change = True
         iteration = 0
         new_centroids = np.zeros([k, data.shape[1]])
-
-        #initialising Cetnroids
+        
         idx = np.random.choice(range(data.shape[0]), k, replace = False)
         centroids = data[idx]
 
-        #training until centroids don't change or max-iter is reached
         while ( iteration < max_iter and change ):
             for index, point in enumerate(data):
                 distance[index] = []
                 for center in centroids:
                     distance[index].append(np.linalg.norm(point - center))
                 labels[index] = np.argmin(distance[index])
-
-
-
+                
             for center in range(k):
                 same_label = data[labels == center]
                 new_centroids[center] = np.mean(same_label, axis = 0)
@@ -147,4 +163,4 @@ def kmeans_func(data, k = 2, iterations = 10, max_iter = 100):
         if cost < best_iter:
             labels_best = labels
             best_iter = cost
-    return labels
+    return labels_best
