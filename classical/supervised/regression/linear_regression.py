@@ -26,6 +26,7 @@ class LinearRegression:
 
         Returns: Nothing
         """
+        label.reshape(-1, 1)
         data_process = data.copy()
         bias_input = np.ones((data.shape[0], 1))
         data_process = np.concatenate((bias_input, data_process), axis=1)
@@ -47,24 +48,25 @@ class LinearRegression:
         data_process = data.copy()
         bias_input = np.ones((data.shape[0], 1))
         data_process = np.concatenate((bias_input, data_process), axis=1)
-        return data_process @ self.__W
+        predict = data_process @ self.__W
+        return predict.reshape(-1)
 
         #to be done:
             #adding regularization terms.
             #checking for true data shape.
             #checking if bias is already present.
 
-# lr = LinearRegression()
-# x = np.array([[1],
-#               [2],
-#               [3],
-#               [4]])
+lr = LinearRegression()
+x = np.array([[1],
+              [2],
+              [3],
+              [4]])
 
-# y = np.array([[4],
-#               [7],
-#               [10],
-#               [13]])
+y = np.array([[4],
+              [7],
+              [10],
+              [13]])
 
-# lr.train(x, y)
-# print(lr.apply(np.array([[5],
-#                          [6]])))
+lr.train(x, y)
+print(lr.apply(np.array([[5],
+                         [6]])))
