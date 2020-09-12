@@ -28,14 +28,13 @@ class LinearRegression:
 
         Returns: Nothing
         """
-        if (kwargs["bias"] is not None):
-            self.__bias = kwargs["bias"]
-
-        if (kwargs["regularizator"] is not None):
-            self.__regularizator = kwargs["regularizator"]
-
-        if (kwargs["penalizer"] is not None):
-            self.__penalizer = kwargs["penalizer"]
+        for key, value in kwargs.items():
+            if key == "bias":
+                self.__bias = value
+            elif key == "regularizator":
+                self.__regularizator = value
+            elif key == "penalizer":
+                self.__penalizer = value
 
     def train(self, train_features, labels):
         """

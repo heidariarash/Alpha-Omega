@@ -29,28 +29,24 @@ class ClippingNormalizer:
 
         Returns: Nothing.
         """
-        #checking if the range of min and max percentile is correct.
-        if (kwargs["max_percentile"] is not None):
-            if (kwargs["max_percentile"] > 100):
-                print("max_percentile should be less 100. It reseted to 90.")
-                self.__max_percentile = 90
-            else:
-                self.__max_percentile = kwargs["max_percentile"]
+        for key, value in kwargs.items():
+            if key == "max_percentile":
+                self.__max_percentile = value
+                if (value > 100):
+                    print("max_percentile should be less 100. It reseted to 90.")
+                    self.__max_percentile = 90
+            elif key == "min_percentile":
+                self.__min_percentile = value
+                if (value < 0):
+                    print("max_percentile should be greater than 0. It reseted to 10.")
+                    self.__min_percentile = 10
+            elif key == "columns":
+                self.__columns = list(set(value))
 
-        if (kwargs["min_percentile"] is not None):
-            if (kwargs["min_percentile"] < 0):
-                print("max_percentile should be greater than 0. It reseted to 10.")
-                self.__min_percentile = 10
-            else:
-                self.__min_percentile = kwargs["min_percentile"]
-        
         if (self.__max_percentile < self.__min_percentile):
             print("max percentile could not be less than min percentile. Max and Min percentile reseted to 90 and 10 respectively.")
             self.__min_percentile = 10
             self.__max_percentile = 90
-
-        if (kwargs["columns"] is not None):
-            self.__columns = list(set(kwargs["columns"]))
 
     def train(self, train_features):
         """

@@ -28,14 +28,19 @@ class KMeans:
 
         Returns: Nothing.
         """
-        if (kwargs["k"] is not None):
-            self.__k = kwargs["k"]
-
-        if (kwargs["iterations"] is not None):
-            self.__iterations = kwargs["iterations"]
-
-        if (kwargs["max_iter"] is not None):
-            self.__max_iter = kwargs["max_iter"]
+        for key, value in kwargs.items():
+            if key == "k":
+                self.__k = value
+            elif key == "iterations":
+                self.__iterations = value
+                if value < 1:
+                    print("iterations could not be less than 1. It reseted back to 10.")
+                    self.__iterations = 10
+            elif key == "max_iter":
+                self.__max_iter = value
+                if value < 1:
+                    print("max_iter could not be less than 1. It reseted back to 100.")
+                    self.__max_iter = 100
 
     def train(self, data):
         """

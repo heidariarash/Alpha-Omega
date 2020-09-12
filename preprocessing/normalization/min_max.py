@@ -12,7 +12,7 @@ class MinMaxNormalizer:
         """
          self.minimum = np.array([])
          self.maximum = np.array([])
-         self.__columns = []
+         self.__columns = None
          self.__shape = 0
 
     def config(self, **kwargs):
@@ -20,12 +20,13 @@ class MinMaxNormalizer:
         Usage: use this method to configure the parameters of the MinMaxNormalizer instantiation.
 
         Inputs:
-            columns: a list which determines which featuers should be normalized. If it is empty, it means to normalize all the features.
+            columns: a list which determines which featuers should be normalized. If it is None or empty, it means to normalize all the features.
 
         Returns: Nothing.
         """
-        if kwargs["columns"] is not None:
-            self.__columns = kwargs["columns"]
+        for key, value in kwargs.items():
+            if key == "columns":
+                self.__columns = value
     
     def train(self, train_features):
         """
