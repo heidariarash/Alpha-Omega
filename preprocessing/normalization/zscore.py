@@ -12,10 +12,22 @@ class ZScoreNormalizer:
         """
          self.mean = np.array([])
          self.std = np.array([])
-         self.__columns = []
+         self.__columns = None
          self.__shape = 0
+
+    def config(self, **kwargs):
+        """
+        Usage: use this method to configure the parameters of the MinMaxNormalizer instantiation.
+
+        Inputs:
+            columns: an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
+
+        Returns: Nothing.
+        """
+        if kwargs["columns"] is not None:
+            self.__columns = kwargs["columns"]
         
-    def train(self, train_features, columns = None):
+    def train(self, train_features):
         """
         Usage  : Use this method to train the parameters of MinMaxNormalizer model. The trained parameteres are:
             mean: a numpy array which contains the mean of the train features for each column.
@@ -36,9 +48,8 @@ class ZScoreNormalizer:
         self.__shape = train_features.shape[1]
         
         #checking for the requested columns to be normalized. If None, all features will normalize.
-        if columns:
-            data_process = train_features[:,columns].copy()
-            self.__columns = columns
+        if self.__columns:
+            data_process = train_features[:,self.__columns].copy()
         else:
             data_process = train_features.copy()
             
