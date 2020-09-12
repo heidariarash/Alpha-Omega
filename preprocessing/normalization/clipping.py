@@ -14,8 +14,45 @@ class ClippingNormalizer:
          self.minimum = np.array([])
          self.__columns = []
          self.__shape = 0
+         self.__max_percentile = 90
+         self.__min_percentile = 10
+         self.__columns = []
+
+    def config(self, **kwargs):
+        """
+        Usage: use this method to configure the parameters of ClippingNormalizer instantiation.
+
+        Inputs:
+            max_percentile: maximum percentile to keep. values greater than max_percentile will be clipped to this value.
+            min_percentile: minimum percentile to keep. values less than min_percentile will be clipped to this value.
+            columns       : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
+
+        Returns: Nothing.
+        """
+        #checking if the range of min and max percentile is correct.
+        if (kwargs["max_percentile"] is not None):
+            if (kwargs["max_percentile"] > 100):
+                print("max_percentile should be less 100. It reseted to 90.")
+                self.__max_percentile = 90
+            else:
+                self.__max_percentile = kwargs["max_percentile"]
+
+        if (kwargs["min_percentile"] is not None):
+            if (kwargs["min_percentile"] < 0):
+                print("max_percentile should be greater than 0. It reseted to 10.")
+                self.__min_percentile = 10
+            else:
+                self.__min_percentile = kwargs["min_percentile"]
         
-    def train(self, train_features, max_percentile = 90, min_percentile = 10, columns = None):
+        if (self.__max_percentile < self.__min_percentile):
+            print("max percentile could not be less than min percentile. Max and Min percentile reseted to 90 and 10 respectively.")
+            self.__min_percentile = 10
+            self.__max_percentile = 90
+
+        if (kwargs["columns"] is not None):
+            self.__columns = list(set(kwargs["columns"]))
+
+    def train(self, train_features):
         """
         Usage  : Use this method to train the parameters of MinMaxNormalizer model. The trained parameteres are:
             maximum: a numpy array which contains the mean of the train features for each column.
@@ -23,17 +60,9 @@ class ClippingNormalizer:
 
         Inputs :
             train_features: The feature matrix used to train the model.
-            max_percentile: maximum percentile to keep. values greater than max_percentile will be clipped to this value.
-            min_percentile: minimum percentile to keep. values less than min_percentile will be clipped to this value.
-            columns       : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
 
         Returns: Nothing
-        """
-        #checking if the range of min and max percentile is correct.
-        if (max_percentile > 100 or min_percentile < 0 or max_percentile <= min_percentile):
-            print("min_percentile should be less than max_percentile and both need to be between 0 and 100")
-            return
-        
+        """      
         #checking for the correct shape of train_features
         if len(train_features.shape) != 2:
             print("Only tabular data is acceptable.")
@@ -43,16 +72,15 @@ class ClippingNormalizer:
         self.__shape = train_features.shape[1]
         
         #checking for the requested columns to be normalized. If None, all features will normalize.
-        if columns:
-            self.__columns = list(set(columns))
+        if self.__columns:
             data_process = train_features[:,self.__columns].copy()
         else:
             data_process = train_features.copy()
             self.__columns = list(range(train_features.shape[1]))
             
         #calculation minimum and maximum of each feature.
-        self.maximum = np.percentile(data_process, max_percentile, axis = 0)
-        self.minimum = np.percentile(data_process, min_percentile, axis = 0 )
+        self.maximum = np.percentile(data_process, self.__max_percentile, axis = 0)
+        self.minimum = np.percentile(data_process, self.__min_percentile, axis = 0 )
         
     def apply(self, features):
         """
