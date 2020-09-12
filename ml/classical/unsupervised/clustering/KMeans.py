@@ -13,9 +13,31 @@ class KMeans:
         self.cost = 0
         self.centroids = np.array([])
         self.labels = []
+        self.__k = 2
+        self.__iterations = 10
+        self.__max_iter = 100
 
+    def config(self, **kwargs):
+        """
+        Usage: Use this method to configure the parameters of the KMeans instantiation.
 
-    def train(self, data, k = 2, iterations = 10, max_iter = 100):
+        Inputs:
+            k        : number of clusters
+            iteration: number of iteration in total to find the best clusters.
+            max_iter : number of maximum iteration if the centroids are still not to be found.
+
+        Returns: Nothing.
+        """
+        if (kwargs["k"] is not None):
+            self.__k = kwargs["k"]
+
+        if (kwargs["iterations"] is not None):
+            self.__iterations = kwargs["iterations"]
+
+        if (kwargs["max_iter"] is not None):
+            self.__max_iter = kwargs["max_iter"]
+
+    def train(self, data):
         """
         Usage: trains the KMeans model. The trained parameteres are:
             labels   : You can check the labels of every data point using this attribute.
@@ -24,10 +46,7 @@ class KMeans:
             distances: If you are curious about the distances of each data point to each centroids you can check it out here.
             
         Inputs:
-            data     : data that traines the model. it should be a numpy ndarray (specifically 2darray).
-            k        : number of clusters
-            iteration: number of iteration in total to find the best clusters.
-            max_iter : number of maximum iteration if the centroids are still not to be found.
+            data: data that traines the model. it should be a numpy ndarray (specifically 2darray).
             
         Returns: Nothing.
         """
@@ -36,20 +55,20 @@ class KMeans:
             return
         
         best_iter = np.Inf
-        for _ in range(iterations):
+        for _ in range(self.__iterations):
             cost = 0
             distance = {}
             labels = np.array([0] * data.shape[0])
             change = True
             iteration = 0
-            new_centroids = np.zeros([k, data.shape[1]])
+            new_centroids = np.zeros([self.__k, data.shape[1]])
 
             #initialising Cetnroids
-            idx = np.random.choice(range(data.shape[0]), k, replace = False)
+            idx = np.random.choice(range(data.shape[0]), self.__k, replace = False)
             centroids = data[idx]
 
             #training until centroids don't change or max-iter is reached
-            while ( iteration < max_iter and change ):
+            while ( iteration < self.__max_iter and change ):
                 #calculating distances between points and centroids
                 for index, point in enumerate(data):
                     distance[index] = []
@@ -59,7 +78,7 @@ class KMeans:
                     labels[index] = np.argmin(distance[index])
 
                 #updating centroids
-                for center in range(k):
+                for center in range(self.__k):
                     same_label = data[labels == center]
                     new_centroids[center] = np.mean(same_label, axis = 0)
 
@@ -107,7 +126,8 @@ class KMeans:
 
         #running the model for each K and compute the cost function and store it in an array.
         for k in range(min_k, max_k + 1):
-            self.train(data, k, max_iter = max_iter)
+            self.config(k=k, max_iter = max_iter)
+            self.train(data)
             costs[k] = self.cost
             
         return costs

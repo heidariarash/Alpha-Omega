@@ -13,8 +13,31 @@ class LinearRegression:
         self.__W = np.array([])
         self.weights = np.array([])
         self.intercept = 0
+        self.__bias = False
+        self.__regularizator = None
+        self.__penalizer = 0.1
 
-    def train(self, train_features, labels, regularizator = None, penalizer = 0.1, bias = False):
+    def config(self, **kwargs):
+        """
+        Usage: use this method to configure the parameters of the LinearRegression instantiation.
+
+        Inputs:
+            regularizator : if "no_reg", no regularization is used. Other option is "ridge".
+            penalizer     : penalizer is the regularization coefficent. It is ignored in the case of no regularization.
+            bias          : If the bias is present in your features, flag this input as True, otherwise False.
+
+        Returns: Nothing
+        """
+        if (kwargs["bias"] is not None):
+            self.__bias = kwargs["bias"]
+
+        if (kwargs["regularizator"] is not None):
+            self.__regularizator = kwargs["regularizator"]
+
+        if (kwargs["penalizer"] is not None):
+            self.__penalizer = kwargs["penalizer"]
+
+    def train(self, train_features, labels):
         """
         Usage  : Use this method to train the LinearRegression model. The trained parameteres are:
             weights  : The weights of the model
@@ -23,10 +46,7 @@ class LinearRegression:
         Inputs :
             train_features: The feature matrix used to train the model.
             labels        : The corresponding labels for each data point in data.
-            reqularizator : if None, no regularization is used. Other option is "ridge".
-            penalizer     : penalizer is the regularization coefficent. It is ignored in the case of no regularization.
-            bias          : If the bias is present in your features, flag this input as True, otherwise False.
-
+            
         Returns: Nothing
         """
         #cheking if the shape of the input is correct.
@@ -38,18 +58,18 @@ class LinearRegression:
         data_process = train_features.copy()
         
         #checking if bias is present in feature maps
-        if not bias:
+        if not self.__bias:
             bias_input = np.ones((train_features.shape[0], 1))
             data_process = np.concatenate((bias_input, data_process), axis=1)
         
         #calculating the weights matrix
-        if not regularizator:
+        if self.__regularizator == "no_reg":
             self.__W = np.linalg.inv(data_process.transpose() @ data_process) @ data_process.transpose() @ labels
-        elif regularizator == "ridge":
+        elif self.__regularizator == "ridge":
             L = np.zeros((data_process.shape[1], data_process.shape[1]))
             L[0,0] = 1
             L = np.eye(data_process.shape[1]) - L
-            self.__W = np.linalg.inv(data_process.transpose() @ data_process + penalizer * L) @ data_process.transpose() @ labels
+            self.__W = np.linalg.inv(data_process.transpose() @ data_process + self.__penalizer * L) @ data_process.transpose() @ labels
         
         self.weights = self.__W[1:].reshape(-1)
         self.intercept = self.__W[0][0]

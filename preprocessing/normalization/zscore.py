@@ -12,7 +12,7 @@ class ZScoreNormalizer:
         """
          self.mean = np.array([])
          self.std = np.array([])
-         self.__columns = None
+         self.__columns = []
          self.__shape = 0
 
     def config(self, **kwargs):
@@ -20,7 +20,7 @@ class ZScoreNormalizer:
         Usage: use this method to configure the parameters of the MinMaxNormalizer instantiation.
 
         Inputs:
-            columns: an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
+            columns: a list which determines which featuers should be normalized. If it is empty, it means to normalize all the features.
 
         Returns: Nothing.
         """

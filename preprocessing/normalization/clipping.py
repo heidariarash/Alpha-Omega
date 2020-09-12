@@ -25,7 +25,7 @@ class ClippingNormalizer:
         Inputs:
             max_percentile: maximum percentile to keep. values greater than max_percentile will be clipped to this value.
             min_percentile: minimum percentile to keep. values less than min_percentile will be clipped to this value.
-            columns       : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
+            columns       : a list which determines which featuers should be normalized. If it is empty, it means to normalize all the features.
 
         Returns: Nothing.
         """
