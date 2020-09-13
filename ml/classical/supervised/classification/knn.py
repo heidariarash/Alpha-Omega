@@ -71,6 +71,23 @@ class KNN:
             neighbor_labels.clear()
         return labels
 
+    def test(self, test_features, test_labels):
+        """
+        Usage: Use this method to find out the accuracy of KNN model.
+
+        Inputs:
+            test_features: The features of the test set.
+            test_labels  : The labels of the test set.
+
+        Returns:
+             - The accuracy of the model in percentage.
+        """
+        predicted_labels = self.apply(test_features)
+        accuracy = 100 * (np.mean(predicted_labels == test_labels.reshape(-1)))
+        return accuracy
+
+# def knn_func(train_features, )
+
 
 x = np.array([[1,1],
               [1,2],
@@ -82,3 +99,6 @@ model = KNN()
 model.config(k=3)
 model.train(x, y)
 print(model.apply(np.array([[2,1],[3,3]])))
+y_test = np.array([[0] , [1]])
+print(model.test(np.array([[2,1],[3,3]]), y_test))
+print(y_test)
