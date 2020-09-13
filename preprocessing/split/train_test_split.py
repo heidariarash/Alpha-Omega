@@ -53,7 +53,7 @@ class TrainTestSplit:
             self.__test_rate = 0.3
             self.__validation_rate = 0.2
 
-    def train(self, features):
+    def train(self, count):
         """
         Usage : You can use this method to randomly split the data between train, test(, and validation) sets. Trained parameteres are:
             test_idx       : the index of the data which belongs to the test set.
@@ -61,19 +61,21 @@ class TrainTestSplit:
             train_idx      : the index of the data which belongs to the validation set.
 
         Inputs:
-            features       : The features of the original dataset.
-            labels         : The labels of the original dataset.
+            count : The number of data points in your dataset.
+            labels: The labels of the original dataset.
 
         Returns: Nothing.
         """
         if (self.__random_state):
             np.random.seed(self.__random_state)
             
-        self.test_idx = np.random.choice(list(range(features.shape[0])), size=int(self.__test_rate * features.shape[0]), replace=False)
-        self.train_idx = np.array(list(set(range(features.shape[0])) - set(self.test_idx)))
+        self.test_idx = np.random.choice(list(range(count)), size=int(self.__test_rate * count), replace=False)
+        self.train_idx = np.array(list(set(range(count)) - set(self.test_idx)))
         if self.__validation:
             self.validation_idx = np.random.choice(self.train_idx, size=int((self.__validation_rate) / (1-self.__test_rate) * self.train_idx.shape[0]), replace=False)
             self.train_idx = np.array(list(set(self.train_idx) - set(self.validation_idx)))
+
+        np.random.seed(None)
 
     def apply(self, featuers, part = "train"):
         """
@@ -98,3 +100,33 @@ class TrainTestSplit:
             return data_process[self.validation_idx]
 
         print("Please specify the part parameter correctly. It could be only 'train', 'test' or if validation is enabled 'validation'.")
+
+
+def train_test_split_func(count, test_rate = 0.3, validation = False, validation_rate = 0.2, random_state = None):
+    """
+    Usage: Use this function to split your data into train and test (and if needed validation) sets.
+
+    Inputs:
+        count: The number of data point in your original dataset.
+        test_rate      : The percentage of the data that should belong to the test set.
+        validation     : If true, it means you also need validation set.
+        validation_rate: If validation is true, this parameter shows which percentage of the data belongs to the validation set. It will be ignored if validation is False.
+        random_state   : The state of random initializer. 
+
+    Returns:
+        - a tupple including:
+            1. train data indices
+            2. test data indices
+            3. validation data indices (if validation is False, it is an empty array).
+    """
+    if (random_state):
+        np.random.seed(random_state)
+        
+    test_idx = np.random.choice(list(range(count)), size=int(test_rate * count), replace=False)
+    train_idx = np.array(list(set(range(count)) - set(test_idx)))
+    if validation:
+        validation_idx = np.random.choice(train_idx, size=int((validation_rate) / (1-test_rate) * train_idx.shape[0]), replace=False)
+        train_idx = np.array(list(set(train_idx) - set(validation_idx)))
+
+    np.random.seed(None)
+    return (train_idx, test_idx, validation_idx)
