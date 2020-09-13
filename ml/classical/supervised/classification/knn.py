@@ -51,23 +51,29 @@ class KNN:
     def apply(self, features):
         """
         Usage: Use this method to apply the KNN model to the new data for prediction.
+
+        Inputs:
+            featurs: features of the test data.
+
+        Returns:
+            - A numpy array including the labels for each data point in featurs.
         """
         labels = np.zeros(features.shape[0], dtype=int)
         distances = []
         neighbor_labels = []
-        neighbor_distances = []
+        # neighbor_distances = []
         for data in range(features.shape[0]):
             for neighbor in range(self.__features.shape[0]):
                 distances.append(np.linalg.norm(self.__features[neighbor] - features[data]))
             for neighbor in range(self.__k):
                 neighbor_labels.append(self.__labels[np.argmin(distances)])
-                neighbor_distances.append(distances[np.argmin(distances)])
+                # neighbor_distances.append(distances[np.argmin(distances)])
                 distances[np.argmin(distances)] = np.Inf
 
             most_label = max(neighbor_labels, key=neighbor_labels.count)
             labels[data] = most_label
             distances.clear()
-            neighbor_distances.clear()
+            # neighbor_distances.clear()
             neighbor_labels.clear()
         return labels
 
@@ -86,19 +92,34 @@ class KNN:
         accuracy = 100 * (np.mean(predicted_labels == test_labels.reshape(-1)))
         return accuracy
 
-# def knn_func(train_features, )
+def knn_func(train_features, train_labels, test_features, k = 1):
+    """
+    Usage: Use this function to apply KNN algorithm to your test set.
 
+    Inputs:
+        train_features: The features of the training set.
+        train_labels  : The labels of the training set.
+        test_features : The features of the test set.
+        k             : The number of nearest neighbors.
 
-x = np.array([[1,1],
-              [1,2],
-              [2,2],
-              [4,5]])
+    Returns: 
+        - A numpy array including the labels for each data point in featurs.
+    """
+    labels = np.zeros(test_features.shape[0], dtype=int)
+    distances = []
+    neighbor_labels = []
+    # neighbor_distances = []
+    for data in range(test_features.shape[0]):
+        for neighbor in range(train_features.shape[0]):
+            distances.append(np.linalg.norm(train_features[neighbor] - test_features[data]))
+        for neighbor in range(k):
+            neighbor_labels.append(train_labels[np.argmin(distances)])
+            # neighbor_distances.append(distances[np.argmin(distances)])
+            distances[np.argmin(distances)] = np.Inf
 
-y = np.array([[0],[0],[1],[1]])
-model = KNN()
-model.config(k=3)
-model.train(x, y)
-print(model.apply(np.array([[2,1],[3,3]])))
-y_test = np.array([[0] , [1]])
-print(model.test(np.array([[2,1],[3,3]]), y_test))
-print(y_test)
+        most_label = max(neighbor_labels, key=neighbor_labels.count)
+        labels[data] = most_label
+        distances.clear()
+        # neighbor_distances.clear()
+        neighbor_labels.clear()
+    return labels
