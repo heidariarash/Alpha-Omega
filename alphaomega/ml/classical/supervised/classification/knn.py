@@ -91,6 +91,7 @@ class KNN:
         predicted_labels = self.apply(test_features)
         accuracy = 100 * (np.mean(predicted_labels == test_labels.reshape(-1)))
         return accuracy
+        
 
 def knn_func(train_features, train_labels, test_features, k = 1):
     """
