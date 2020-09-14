@@ -138,7 +138,7 @@ class KMeans:
         return costs
             
 
-def kmeans_func(data, k = 2, iterations = 10, max_iter = 100):
+def kmeans_apply(data, k = 2, iterations = 10, max_iter = 100):
     """
     Usage: This function is actually is the same as the class. you can use this API instead of instantiating the KMeans class.
 

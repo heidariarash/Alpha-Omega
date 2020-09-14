@@ -102,7 +102,7 @@ class TrainTestSplit:
         print("Please specify the part parameter correctly. It could be only 'train', 'test' or if validation is enabled 'validation'.")
 
 
-def train_test_split_func(count, test_rate = 0.3, validation = False, validation_rate = 0.2, random_state = None):
+def train_test_split(count, test_rate = 0.3, validation = False, validation_rate = 0.2, random_state = None):
     """
     Usage: Use this function to split your data into train and test (and if needed validation) sets.
 

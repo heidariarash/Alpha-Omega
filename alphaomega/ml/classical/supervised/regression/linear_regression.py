@@ -109,7 +109,7 @@ class LinearRegression:
         predict = data_process @ self.__W
         return predict.reshape(-1)
 
-def train_linear_regression_func(train_features, labels, regularizator = None, penalizer = 0.1, bias = False):
+def linear_regression_train(train_features, labels, regularizator = None, penalizer = 0.1, bias = False):
     """
     Usage  : Use this function to train a linear regression model. You can use apply_linear_regression_func to predict the labels for test set with the help of the output of this funcion.
 
@@ -147,7 +147,7 @@ def train_linear_regression_func(train_features, labels, regularizator = None, p
 
     return weights
 
-def apply_linear_regression_func(test_features, weights, bias = False):
+def linear_regression_apply(test_features, weights, bias = False):
     """
     Usage: Use this function to evalute your linear regression model on test data.
 

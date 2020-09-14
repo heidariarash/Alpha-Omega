@@ -93,7 +93,7 @@ class KNN:
         return accuracy
         
 
-def knn_func(train_features, train_labels, test_features, k = 1):
+def knn_apply(train_features, train_labels, test_features, k = 1):
     """
     Usage: Use this function to apply KNN algorithm to your test set.
 
