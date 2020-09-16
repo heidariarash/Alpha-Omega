@@ -2,7 +2,7 @@ import numpy as np
 
 class ChannelSpliter:
     """
-    Usage: Use this class to split the channels of your image into three different image.
+    Usage: Use this class to split the channels of your image into its constructing channels.
     """
     def __init__(self):
         """
@@ -82,3 +82,33 @@ class ChannelSpliter:
 
         #if image has more than three dimesions or is one dimensional
         print("image should be only two or three dimensional.")
+
+def channel_splitter(image, channels_dimension = "last"):
+    """
+    Usage: Use this function to split the channels of your image into its constructing channels.
+
+    Inputs:
+        image              : The image to be splitted.
+        channels_dimesnions: The dimension, in which the channels are stacked up in the input image. default is "last". It could be also "first".
+
+    Returns:
+        - A list of numpy arrays each contains a channel.
+    """
+    channels = []
+
+    #checking if the image has only two dimenstions (if it's grayscale)
+    if (len(image.shape) == 2):
+        channels.append(image)
+        return channels
+
+    #checking if the image has three dimensions (e.g. RGB)
+    if (len(image.shape) == 3):
+        for channel in range(image.shape[channels_dimensions]):
+            if channels_dimensions == 2:
+                channels.append(image[:,:, channel])
+            else channels_dimensions == 0:
+                channels.append(image[channel,:, :])
+        return channels
+
+    #if image has more than three dimesions or is one dimensional
+    print("image should be only two or three dimensional.")
