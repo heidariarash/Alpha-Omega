@@ -10,9 +10,9 @@ class TrainTestSplit:
         Inputs : Nothing.
         Returns: An instantiation of the TrainTestSplit class.
         """
-        self.test_idx = np.array([])
-        self.validation_idx = np.array([])
-        self.train_idx = np.array([])
+        self.__test_idx = np.array([])
+        self.__validation_idx = np.array([])
+        self.__train_idx = np.array([])
         self.__test_rate = 0.3
         self.__validation = False
         self.__validation_rate = 0.2
@@ -53,6 +53,26 @@ class TrainTestSplit:
             self.__test_rate = 0.3
             self.__validation_rate = 0.2
 
+    def get(self, attribute):
+        """
+        Usage: Use this method to get the attribute of interest.
+
+        Inputs:
+            attribute: The attribute of interest. It could be "train_idx" or "test_idx", or "validation_idx".
+
+        Returns: The desired attribute
+        """
+        if attribute == "train_idx":
+            return self.__train_idx
+
+        if attribute == "test_idx":
+            return self.__test_idx
+
+        if attribute == "validation_idx":
+            return self.__validation_idx
+
+        print("The specified attribute is not valid. Acceptable attributes are 'maximum', and 'minimum'")
+
     def train(self, count):
         """
         Usage : You can use this method to randomly split the data between train, test(, and validation) sets. Trained parameteres are:
@@ -69,11 +89,11 @@ class TrainTestSplit:
         if (self.__random_state):
             np.random.seed(self.__random_state)
             
-        self.test_idx = np.random.choice(list(range(count)), size=int(self.__test_rate * count), replace=False)
-        self.train_idx = np.array(list(set(range(count)) - set(self.test_idx)))
+        self.__test_idx = np.random.choice(list(range(count)), size=int(self.__test_rate * count), replace=False)
+        self.__train_idx = np.array(list(set(range(count)) - set(self.__test_idx)))
         if self.__validation:
-            self.validation_idx = np.random.choice(self.train_idx, size=int((self.__validation_rate) / (1-self.__test_rate) * self.train_idx.shape[0]), replace=False)
-            self.train_idx = np.array(list(set(self.train_idx) - set(self.validation_idx)))
+            self.__validation_idx = np.random.choice(self.__train_idx, size=int((self.__validation_rate) / (1-self.__test_rate) * self.__train_idx.shape[0]), replace=False)
+            self.__train_idx = np.array(list(set(self.__train_idx) - set(self.__validation_idx)))
 
         np.random.seed(None)
 
@@ -93,11 +113,11 @@ class TrainTestSplit:
         else:
             data_process = featuers.copy()
         if part == "train":
-            return data_process[self.train_idx]
+            return data_process[self.__train_idx]
         if part == "test":
-            return data_process[self.test_idx]
+            return data_process[self.__test_idx]
         if part == "validation" and self.__validation_rate:
-            return data_process[self.validation_idx]
+            return data_process[self.__validation_idx]
 
         print("Please specify the part parameter correctly. It could be only 'train', 'test' or if validation is enabled 'validation'.")
 
