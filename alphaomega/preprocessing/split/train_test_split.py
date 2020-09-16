@@ -71,7 +71,7 @@ class TrainTestSplit:
         if attribute == "validation_idx":
             return self.__validation_idx
 
-        print("The specified attribute is not valid. Acceptable attributes are 'maximum', and 'minimum'")
+        print("The specified attribute is not valid. Acceptable attributes are 'train_idx', 'test_idx', and 'validation_idx'")
 
     def train(self, count):
         """
