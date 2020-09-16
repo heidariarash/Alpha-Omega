@@ -53,7 +53,7 @@ class ClippingNormalizer:
         Usage: Use this method to get the attribute of interest.
 
         Inputs:
-            attribute: The attribute of interest. It could be "maximum" or minimum".
+            attribute: The attribute of interest. It could be "maximum" or "minimum".
 
         Returns: The desired attribute
         """
