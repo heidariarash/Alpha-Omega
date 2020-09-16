@@ -11,8 +11,6 @@ class LinearRegression:
         Returns: An Instantiation of the class.
         """
         self.__W = np.array([])
-        self.weights = np.array([])
-        self.intercept = 0
         self.__bias = False
         self.__regularizator = None
         self.__penalizer = 0.1
@@ -35,6 +33,23 @@ class LinearRegression:
                 self.__regularizator = value
             elif key == "penalizer":
                 self.__penalizer = value
+
+    def get(self, attribute):
+        """
+        Usage: Use this method to get the attribute of interest.
+
+        Inputs:
+            attribute: The attribute of interest. It could be "weights" or "intercept".
+
+        Returns: The desired attribute
+        """
+        if attribute == "intercept":
+            return self.__W[0][0]
+
+        if attribute == "weights":
+            return self.__W[1:].reshape(-1)
+
+        print("The specified attribute is not valid. Acceptable attributes are 'wights' and 'intercept'")
 
     def train(self, train_features, labels):
         """
@@ -70,9 +85,6 @@ class LinearRegression:
             L = np.eye(data_process.shape[1]) - L
             self.__W = np.linalg.inv(data_process.transpose() @ data_process + self.__penalizer * L) @ data_process.transpose() @ labels
         
-        self.weights = self.__W[1:].reshape(-1)
-        self.intercept = self.__W[0][0]
-
     def apply(self, test_features, bias = False):
         """
         Usage: Use this method to evalute your LinearRegression Model on test data.
