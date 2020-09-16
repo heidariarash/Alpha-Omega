@@ -10,8 +10,8 @@ class ClippingNormalizer:
         Inputs : Nothing
         Returns: An Instantiation of the class.
         """
-         self.maximum = np.array([])
-         self.minimum = np.array([])
+         self.__maximum = np.array([])
+         self.__minimum = np.array([])
          self.__columns = []
          self.__shape = 0
          self.__max_percentile = 90
@@ -48,6 +48,23 @@ class ClippingNormalizer:
             self.__min_percentile = 10
             self.__max_percentile = 90
 
+    def get(self, attribute):
+        """
+        Usage: Use this method to get the attribute of interest.
+
+        Inputs:
+            attribute: The attribute of interest. It could be "maximum" or minimum".
+
+        Returns: The desired attribute
+        """
+        if attribute == "maximum":
+            return self.__maximum
+
+        if attribute == "minimum":
+            return self.__minimum
+
+        print("The specified attribute is not valid. Acceptable attributes are 'maximum', and 'minimum'")
+
     def train(self, train_features):
         """
         Usage  : Use this method to train the parameters of MinMaxNormalizer model. The trained parameteres are:
@@ -75,8 +92,8 @@ class ClippingNormalizer:
             self.__columns = list(range(train_features.shape[1]))
             
         #calculation minimum and maximum of each feature.
-        self.maximum = np.percentile(data_process, self.__max_percentile, axis = 0)
-        self.minimum = np.percentile(data_process, self.__min_percentile, axis = 0 )
+        self.__maximum = np.percentile(data_process, self.__max_percentile, axis = 0)
+        self.__minimum = np.percentile(data_process, self.__min_percentile, axis = 0 )
         
     def apply(self, features):
         """
@@ -106,10 +123,10 @@ class ClippingNormalizer:
             if column not in self.__columns:
                 continue
             for row in range(features.shape[0]):
-                if data_process[row ,column] > self.maximum[self.__columns.index(column)]:
-                    data_process[row, column] = self.maximum[self.__columns.index(column)]
-                elif data_process[row, column] < self.minimum[self.__columns.index(column)]:
-                    data_process[row, column] = self.minimum[self.__columns.index(column)]
+                if data_process[row ,column] > self.__maximum[self.__columns.index(column)]:
+                    data_process[row, column] = self.__maximum[self.__columns.index(column)]
+                elif data_process[row, column] < self.__minimum[self.__columns.index(column)]:
+                    data_process[row, column] = self.__minimum[self.__columns.index(column)]
             
         return data_process
 
