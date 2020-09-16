@@ -10,8 +10,8 @@ class ZScoreNormalizer:
         Inputs : Nothing
         Returns: An Instantiation of the class.
         """
-         self.mean = np.array([])
-         self.std = np.array([])
+         self.__mean = np.array([])
+         self.__std = np.array([])
          self.__columns = None
          self.__shape = 0
 
@@ -27,6 +27,23 @@ class ZScoreNormalizer:
         for key, value in kwargs.items():
             if key == "columns":
                 self.__columns = value
+
+    def get(self, attribute):
+        """
+        Usage: Use this method to get the attribute of interest.
+
+        Inputs:
+            attribute: The attribute of interest. It could be "std" or "mean".
+
+        Returns: The desired attribute
+        """
+        if attribute == "mean":
+            return self.__mean
+
+        if attribute == "std":
+            return self.__std
+
+        print("The specified attribute is not valid. Acceptable attributes are 'mean', and 'std'")
         
     def train(self, train_features):
         """
@@ -55,8 +72,8 @@ class ZScoreNormalizer:
             data_process = train_features.copy()
             
         #calculation minimum and maximum of each feature.
-        self.mean = np.mean(data_process,axis = 0)
-        self.std = np.std(data_process, axis = 0)
+        self.__mean = np.mean(data_process,axis = 0)
+        self.__std = np.std(data_process, axis = 0)
         
     def apply(self, features):
         """
@@ -84,10 +101,10 @@ class ZScoreNormalizer:
         
         #checking if all columns should be normalized. If self.__columns is None, all columns will be normalized.
         if not self.__columns:
-            return (data_process - self.mean) / (self.std)
+            return (data_process - self.__mean) / (self.__std)
         
         #if only some columns should get normalized, we do it with the next command.
-        data_process[: ,self.__columns] = (data_process[: ,self.__columns] - self.mean) / (self.std)
+        data_process[: ,self.__columns] = (data_process[: ,self.__columns] - self.__mean) / (self.__std)
         return data_process
 
 
