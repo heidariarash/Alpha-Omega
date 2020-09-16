@@ -10,9 +10,9 @@ class KMeans:
         Inputs : Nothing
         Returns: An Instantiation of the class.
         """
-        self.cost = 0
-        self.centroids = np.array([])
-        self.labels = []
+        self.__cost = 0
+        self.__centroids = np.array([])
+        self.__labels = []
         self.__k = 2
         self.__iterations = 10
         self.__max_iter = 100
@@ -41,6 +41,26 @@ class KMeans:
                 if value < 1:
                     print("max_iter could not be less than 1. It reseted back to 100.")
                     self.__max_iter = 100
+
+    def get(self, attribute):
+        """
+        Usage: Use this method to get the attribute of interest.
+
+        Inputs:
+            attribute: The attribute of interest. It could be "centroids", "labels", or "cost".
+
+        Returns: The desired attribute
+        """
+        if attribute == "cost":
+            return self.__cost
+
+        if attribute == "labels":
+            return self.__labels
+
+        if attribute == "centroids":
+            return self.__centroids
+
+        print("The specified attribute is not valid. Acceptable attributes are 'centroids', 'labels', and 'cost'")
 
     def train(self, features):
         """
@@ -100,9 +120,9 @@ class KMeans:
 
             #choosing the best clustering based on cost function.
             if cost < best_iter:
-                self.cost = cost
-                self.labels = labels
-                self.centroids = centroids
+                self.__cost = cost
+                self.__labels = labels
+                self.__centroids = centroids
                 best_iter = cost
                 
                 
@@ -133,7 +153,7 @@ class KMeans:
         for k in range(min_k, max_k + 1):
             self.config(k=k, max_iter = max_iter)
             self.train(features)
-            costs[k] = self.cost
+            costs[k] = self.__cost
             
         return costs
             
