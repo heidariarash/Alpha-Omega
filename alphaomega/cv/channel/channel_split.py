@@ -1,6 +1,6 @@
 import numpy as np
 
-class ChannelSplit:
+class ChannelSpliter:
     """
     Usage: Use this class to split the channels of your image into three different image.
     """
@@ -12,19 +12,28 @@ class ChannelSplit:
         """
         self.__channels = list()
         self.__image_type = ""
+        self.__channels_dimensions = 2
 
     def config(self, **kwargs):
         """
         Usage: Use this method to configure the parameters of the ChannelSplit instantiation.
 
         Inputs:
-            image_type: the type of the image. This configuration can help you with get method. Use a string as the type, e.g. "RGB" or "BGR"
+            image_type         : the type of the image. This configuration can help you with get method. Use a string as the type, e.g. "RGB" or "BGR"
+            channels_dimensions: specify where the channels are stacked in the shape of the input image. default is "last". It could be also "first".
 
         Returns: Nothing.
         """
         for key , value in kwargs.items():
             if key == "image_type":
                 self.__image_type = value
+            elif key == "channels_dimensions":
+                if value == "first" or value == 0:
+                    self.__channels_dimensions = 0
+                elif value == "last" or value == 2:
+                    self.__channels_dimensions = 2
+                else:
+                    print("Wrong value for channels_dimension. It could be only 'first' or 'last' (0 and 2 are also possible).")
 
     def get(self, channel):
         """
@@ -64,8 +73,11 @@ class ChannelSplit:
         #checking if the image has three dimensions (e.g. RGB)
         if (len(image.shape) == 3):
             self.__channels.clear()
-            for channel in range(image.shape[0]):
-                self.__channels.append(image[channel,:,:])
+            for channel in range(image.shape[self.__channels_dimensions]):
+                if self.__channels_dimensions == 2:
+                    self.__channels.append(image[:,:, channel])
+                else self.__channels_dimensions == 0:
+                    self.__channels.append(image[channel,:, :])
             return self.__channels
 
         #if image has more than three dimesions or is one dimensional
