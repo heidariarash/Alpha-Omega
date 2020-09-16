@@ -10,8 +10,8 @@ class MinMaxNormalizer:
         Inputs : Nothing
         Returns: An Instantiation of the class.
         """
-         self.minimum = np.array([])
-         self.maximum = np.array([])
+         self.__minimum = np.array([])
+         self.__maximum = np.array([])
          self.__columns = None
          self.__shape = 0
 
@@ -27,6 +27,23 @@ class MinMaxNormalizer:
         for key, value in kwargs.items():
             if key == "columns":
                 self.__columns = value
+
+    def get(self, attribute):
+        """
+        Usage: Use this method to get the attribute of interest.
+
+        Inputs:
+            attribute: The attribute of interest. It could be "maximum" or "minimum".
+
+        Returns: The desired attribute
+        """
+        if attribute == "maximum":
+            return self.__maximum
+
+        if attribute == "minimum":
+            return self.__minimum
+
+        print("The specified attribute is not valid. Acceptable attributes are 'maximum', and 'minimum'")
     
     def train(self, train_features):
         """
@@ -54,8 +71,8 @@ class MinMaxNormalizer:
             data_process = train_features.copy()
             
         #calculation minimum and maximum of each feature.
-        self.maximum = np.max(data_process,axis = 0)
-        self.minimum = np.min(data_process, axis = 0)
+        self.__maximum = np.max(data_process,axis = 0)
+        self.__minimum = np.min(data_process, axis = 0)
         
     def apply(self, features):
         """
@@ -83,10 +100,10 @@ class MinMaxNormalizer:
         
         #checking if all columns should be normalized. If self.__columns is None, all columns will be normalized.
         if not self.__columns:
-            return (data_process - self.minimum) / (self.maximum - self.minimum)
+            return (data_process - self.__minimum) / (self.__maximum - self.__minimum)
         
         #if only some columns should get normalized, we do it with the next command.
-        data_process[: ,self.__columns] = (data_process[: ,self.__columns] - self.minimum) / (self.maximum - self.minimum)
+        data_process[: ,self.__columns] = (data_process[: ,self.__columns] - self.__minimum) / (self.__maximum - self.__minimum)
         return data_process
 
 
