@@ -35,7 +35,7 @@ class ChannelMergeer:
         Usage: Use this method to apply the merging of the channels and build a new image.
 
         Inputs:
-            channels: specify the channels of the image here. They should be the same size.
+            channels: The channels of the image. They should be the same size.
 
         Returns:
             - The constructed image using the channels.
@@ -57,4 +57,35 @@ class ChannelMergeer:
             else:
                 chs[index] = np.expand_dims(channel, self.__channels_dimension)
             
-        return np.concatenate([*chs], axis=self.__channels_dimension)
+        return np.concatenate([*chs], axis = self.__channels_dimension)
+
+
+def channel_merger(channels_dimensions, *channels):
+    """
+    Usage: Use this function to merge the channels of an image and construct the image.
+
+    Inputs:
+        channels_dimensions: The dimension of the channels. It could be either "first" or "last" (or equally 0 and 2). if it is "first" and you have 3 750x750 channels, the shape of the result is (3,750,750).
+        channels           : The channels of the image. They should be the same size.
+
+    Returns:
+        - The constructed image using the channels.
+    """
+    shape = channels[0].shape
+
+    #checking if the first channel has only 2 dimensions.
+    if len(shape) != 2:
+        print("Channels should be 2d.")
+        return
+    
+    chs = [np.zeros_like(channels[0])] * len(channels)
+
+    #checking if all the channels have the same shape. If they have, expanding them.
+    for index, channel in enumerate(channels):
+        if channel.shape != shape:
+            print(f"Channels should be the same size. The channel {index+1} has a different shape as the first channel.")
+            return
+        else:
+            chs[index] = np.expand_dims(channel, channels_dimension)
+        
+    return np.concatenate([*chs], axis = channels_dimension)
