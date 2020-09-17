@@ -22,7 +22,7 @@ class ChannelMergeer:
         Returns: Nothing.
         """
         for key, value in kwargs.items():
-            if key == "channels_dimensions":
+            if key == "channels_dimension":
                 if value == "first" or value == 0:
                     self.__channels_dimension = 0
                 elif value == "last" or value == 2:
@@ -60,17 +60,25 @@ class ChannelMergeer:
         return np.concatenate([*chs], axis = self.__channels_dimension)
 
 
-def channel_merger(channels_dimensions, *channels):
+def channel_merger_apply(channels, channels_dimension = "last"):
     """
     Usage: Use this function to merge the channels of an image and construct the image.
 
     Inputs:
-        channels_dimensions: The dimension of the channels. It could be either "first" or "last" (or equally 0 and 2). if it is "first" and you have 3 750x750 channels, the shape of the result is (3,750,750).
+        channels_dimension: The dimension of the channels. It could be either "first" or "last" (or equally 0 and 2). if it is "first" and you have 3 750x750 channels, the shape of the result is (3,750,750).
         channels           : The channels of the image. They should be the same size.
 
     Returns:
         - The constructed image using the channels.
     """
+
+    if channels_dimension == "last" or channels_dimension == 2:
+        channels_dimension = 2
+    elif channels_dimension == 'first' or channels_dimension == 0:
+        channels_dimension = 0
+    else:
+        print("channels_dimesions should be 'first', or 'last'. (0 or 2 are also possible.)")
+
     shape = channels[0].shape
 
     #checking if the first channel has only 2 dimensions.

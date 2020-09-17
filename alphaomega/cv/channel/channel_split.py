@@ -12,7 +12,7 @@ class ChannelSpliter:
         """
         self.__channels = list()
         self.__image_type = ""
-        self.__channels_dimensions = 2
+        self.__channels_dimension = 2
 
     def config(self, **kwargs):
         """
@@ -20,18 +20,18 @@ class ChannelSpliter:
 
         Inputs:
             image_type         : the type of the image. This configuration can help you with get method. Use a string as the type, e.g. "RGB" or "BGR"
-            channels_dimensions: specify where the channels are stacked in the shape of the input image. default is "last". It could be also "first".
+            channels_dimension: specify where the channels are stacked in the shape of the input image. default is "last". It could be also "first".
 
         Returns: Nothing.
         """
         for key , value in kwargs.items():
             if key == "image_type":
                 self.__image_type = value
-            elif key == "channels_dimensions":
+            elif key == "channels_dimension":
                 if value == "first" or value == 0:
-                    self.__channels_dimensions = 0
+                    self.__channels_dimension = 0
                 elif value == "last" or value == 2:
-                    self.__channels_dimensions = 2
+                    self.__channels_dimension = 2
                 else:
                     print("Wrong value for channels_dimension. It could be only 'first' or 'last' (0 and 2 are also possible).")
 
@@ -73,17 +73,17 @@ class ChannelSpliter:
         #checking if the image has three dimensions (e.g. RGB)
         if (len(image.shape) == 3):
             self.__channels.clear()
-            for channel in range(image.shape[self.__channels_dimensions]):
-                if self.__channels_dimensions == 2:
+            for channel in range(image.shape[self.__channels_dimension]):
+                if self.__channels_dimension == 2:
                     self.__channels.append(image[:,:, channel])
-                else self.__channels_dimensions == 0:
+                elif self.__channels_dimension == 0:
                     self.__channels.append(image[channel,:, :])
             return self.__channels
 
         #if image has more than three dimesions or is one dimensional
         print("image should be only two or three dimensional.")
 
-def channel_splitter(image, channels_dimension = "last"):
+def channel_splitter_apply(image, channels_dimension = "last"):
     """
     Usage: Use this function to split the channels of your image into its constructing channels.
 
@@ -96,6 +96,13 @@ def channel_splitter(image, channels_dimension = "last"):
     """
     channels = []
 
+    if channels_dimension == "last" or channels_dimension == 2:
+        channels_dimension = 2
+    elif channels_dimension == 'first' or channels_dimension == 0:
+        channels_dimension = 0
+    else:
+        print("channels_dimesions should be 'first', or 'last'. (0 or 2 are also possible.)")
+
     #checking if the image has only two dimenstions (if it's grayscale)
     if (len(image.shape) == 2):
         channels.append(image)
@@ -103,10 +110,10 @@ def channel_splitter(image, channels_dimension = "last"):
 
     #checking if the image has three dimensions (e.g. RGB)
     if (len(image.shape) == 3):
-        for channel in range(image.shape[channels_dimensions]):
-            if channels_dimensions == 2:
+        for channel in range(image.shape[channels_dimension]):
+            if channels_dimension == 2:
                 channels.append(image[:,:, channel])
-            else channels_dimensions == 0:
+            elif channels_dimension == 0:
                 channels.append(image[channel,:, :])
         return channels
 
