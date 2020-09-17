@@ -1,7 +1,6 @@
 import numpy as np
 from alphaomega.cv.channel.channel_split import channel_splitter_apply
 from alphaomega.cv.channel.channel_merge import channel_merger_apply
-import matplotlib.pyplot as plt
 
 class BorderIntropolation:
     """
