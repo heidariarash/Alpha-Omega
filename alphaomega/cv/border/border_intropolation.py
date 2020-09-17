@@ -1,4 +1,6 @@
 import numpy as np
+from alphaomega.cv.channel.channel_split import channel_splitter_apply
+from alphaomega.cv.channel.channel_merge import channel_merger_apply
 
 class BorderIntropolation:
     """
@@ -83,42 +85,55 @@ class BorderIntropolation:
         Returns:
             - The new image with intropolated borders.
         """
-        if self.__border_type == "constant":
-            image = np.concatenate((np.zeros((image.shape[0], self.__left)), image), axis = 1)
-            image = np.concatenate((image, np.zeros((image.shape[0], self.__right))), axis = 1)
-            image = np.concatenate((np.zeros((self.__top, image.shape[1])), image), axis = 0)
-            image = np.concatenate((image, np.zeros((self.__bottom, image.shape[1]))), axis = 0)
+        #checking if the image has three dimensions.
+        if (len(image.shape) == 3):
+            channels_applied = []
+            # print(channels_applied)
+            channels = channel_splitter_apply(image)
+            for index, channel in enumerate(channels):
+                channels_applied.append(self.apply(channel))
+            image = channel_merger_apply(channels_applied)
             return image
 
-        if self.__border_type == "replicate":
-            image = np.concatenate((np.repeat(np.expand_dims(image[:, 0], 1), self.__left, 1), image), axis = 1)
-            image = np.concatenate((image, np.repeat(np.expand_dims(image[:, image.shape[1]-1], 1), self.__right, 1)), axis = 1)
-            image = np.concatenate((np.repeat(np.expand_dims(image[0, :], 0), self.__top, 0), image), axis = 0)
-            image = np.concatenate((image, np.repeat(np.expand_dims(image[image.shape[0]-1, :], 0), self.__bottom, 0)), axis=0)
+        elif (len(image.shape) == 2):
+            if self.__border_type == "constant":
+                image = np.concatenate((np.zeros((image.shape[0], self.__left)), image), axis = 1)
+                image = np.concatenate((image, np.zeros((image.shape[0], self.__right))), axis = 1)
+                image = np.concatenate((np.zeros((self.__top, image.shape[1])), image), axis = 0)
+                image = np.concatenate((image, np.zeros((self.__bottom, image.shape[1]))), axis = 0)
+                return image
+
+            if self.__border_type == "replicate":
+                image = np.concatenate((np.repeat(np.expand_dims(image[:, 0], 1), self.__left, 1), image), axis = 1)
+                image = np.concatenate((image, np.repeat(np.expand_dims(image[:, image.shape[1]-1], 1), self.__right, 1)), axis = 1)
+                image = np.concatenate((np.repeat(np.expand_dims(image[0, :], 0), self.__top, 0), image), axis = 0)
+                image = np.concatenate((image, np.repeat(np.expand_dims(image[image.shape[0]-1, :], 0), self.__bottom, 0)), axis=0)
+                return image
+
+            if self.__border_type == "reflect":
+                image = np.concatenate((np.flip(image[:, 0:self.__left], axis= 1), image), axis= 1)
+                image = np.concatenate((image, np.flip(image[:, image.shape[1] - self.__right:], axis = 1)), axis= 1)
+                image = np.concatenate((np.flip(image[:self.__top,:], axis=0), image), axis= 0)
+                image = np.concatenate((image, np.flip(image[image.shape[0] - self.__bottom:,:], axis=0)), axis= 0)
+                return image
+
+            if self.__border_type == "reflect_without_border":
+                image = np.concatenate((np.flip(image[:, 1:self.__left+1], axis= 1), image), axis= 1)
+                image = np.concatenate((image, np.flip(image[:, image.shape[1] - self.__right - 1:-1], axis = 1)), axis= 1)
+                image = np.concatenate((np.flip(image[1:self.__top + 1,:], axis=0), image), axis= 0)
+                image = np.concatenate((image, np.flip(image[image.shape[0] - self.__bottom - 1:-1,:], axis=0)), axis= 0)
+                return image
+
+            #only option is warp
+            orig  = image.copy()
+            image = np.concatenate((orig[:, image.shape[1] - self.__left:], image), axis= 1)
+            image = np.concatenate((image, orig[:, 0:self.__right]), axis= 1)
+            orig = image.copy()
+            image = np.concatenate((image[image.shape[0] - self.__top:,:], image), axis= 0)
+            image = np.concatenate((image, orig[:self.__bottom,:]), axis= 0)
             return image
 
-        if self.__border_type == "reflect":
-            image = np.concatenate((np.flip(image[:, 0:self.__left], axis= 1), image), axis= 1)
-            image = np.concatenate((image, np.flip(image[:, image.shape[1] - self.__right:], axis = 1)), axis= 1)
-            image = np.concatenate((np.flip(image[:self.__top,:], axis=0), image), axis= 0)
-            image = np.concatenate((image, np.flip(image[image.shape[0] - self.__bottom:,:], axis=0)), axis= 0)
-            return image
-
-        if self.__border_type == "reflect_without_border":
-            image = np.concatenate((np.flip(image[:, 1:self.__left+1], axis= 1), image), axis= 1)
-            image = np.concatenate((image, np.flip(image[:, image.shape[1] - self.__right - 1:-1], axis = 1)), axis= 1)
-            image = np.concatenate((np.flip(image[1:self.__top + 1,:], axis=0), image), axis= 0)
-            image = np.concatenate((image, np.flip(image[image.shape[0] - self.__bottom - 1:-1,:], axis=0)), axis= 0)
-            return image
-
-        #only option is warp
-        orig  = image.copy()
-        image = np.concatenate((orig[:, image.shape[1] - self.__left:], image), axis= 1)
-        image = np.concatenate((image, orig[:, 0:self.__right]), axis= 1)
-        orig = image.copy()
-        image = np.concatenate((image[image.shape[0] - self.__top:,:], image), axis= 0)
-        image = np.concatenate((image, orig[:self.__bottom,:]), axis= 0)
-        return image
+        print("image should be 2 dimensional or 3 dimensional.")
 
 
 def border_intropolate_apply(image, pixels_add, border_type = "constant"):
