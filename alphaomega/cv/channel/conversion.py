@@ -223,7 +223,7 @@ class Converter:
             elif self.__dest == "RGB":
                 return self.__LAB2RGB(image)
             elif self.__dest == "GRAY":
-                return self.__RGB2GRAY(image)
+                return self.__LAB2GRAY(image)
         
     def __RGB2BGR(self, image):
         converted = np.zeros_like(image)
