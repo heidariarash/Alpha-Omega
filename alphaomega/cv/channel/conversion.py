@@ -374,3 +374,340 @@ class Converter:
         converted = self.__HSL2RGB(image)
         converted = self.__RGB2GRAY(image)
         return converted
+
+
+def converter_apply(image, source, destination):
+    """
+    Usage: Use this function to convert the color space of your image to a new one.
+
+    Inputs:
+        source      : The source color space. It should be one of these options:
+            "RGB" or "RGBA"
+            "BGR" or "BGRA"
+            "HSL"
+            "HSV"
+        destination : The destination color space. It should be one of these options:
+            "RGB"
+            "BGR"
+            "HSL"
+            "HSV"
+            "GRAY"
+
+    Returns: An image with the new color space.
+    """
+    if source not in ["RGB", "RGBA", "BGRA", "BGR", "HSL", "HSV"]:
+        print('The only accpetable values for source are: "RGB", "BGR", "HSL", and "HSV".')
+        return
+
+    if destination not in ["RGB", "BGR", "RGBA", "BGRA", "HSL", "HSV", "GRAY"]:
+        print('The only accpetable values for source are: "RGB", "BGR", "HSL", "HSV", and "GRAY".')
+        return
+
+    if len(image.shape) != 3:
+        print("This is not an image...")
+        return
+
+    if len(source) != image.shape[2]:
+        print("The number of channels in the image is not equal to the expected number of channels (what you have configured using config method).")
+        return
+
+    if (source == image):
+        print("Are you sure? Both source and destination color spaces are same...")
+        return image
+
+    if source == "RGB":
+        if destination == "BGR":
+            return RGB2BGR(image) #done
+        elif destination == "RGBA":
+            return RGB2RGBA(image) #done
+        elif destination == "BGRA":
+            return RGB2BGRA(image) #done
+        elif destination == "HSL":
+            return RGB2HSL(image) #done
+        elif destination == "HSV":
+            return RGB2HSV(image) #done
+        elif destination == "GRAY":
+            return RGB2GRAY(image) #done
+
+    elif source == "BGR":
+        if destination == "RGB":
+            return RGB2BGR(image) #done
+        elif destination == "RGBA":
+            return RGB2BGRA(image) #done
+        elif destination == "BGRA":
+            return RGB2RGBA(image) #done
+        elif destination == "HSL":
+            return BGR2HSL(image) #done
+        elif destination == "HSV":
+            return BGR2HSV(image) #done
+        elif destination == "GRAY":
+            return BGR2GRAY(image) #done
+
+    elif source == "RGBA":
+        if destination == "BGR":
+            return RGBA2BGR(image) #done
+        elif destination == "RGB":
+            return RGBA2RGB(image) #done
+        elif destination == "BGRA":
+            return RGBA2BGRA(image) #done
+        elif destination == "HSL":
+            return RGBA2HSL(image) #done
+        elif destination == "HSV":
+            return RGBA2HSV(image) #done
+        elif destination == "GRAY":
+            return RGBA2GRAY(image) #done
+
+    elif source == "BGRA":
+        if destination == "BGR":
+            return RGBA2RGB(image) #done
+        elif destination == "RGBA":
+            return RGBA2BGRA(image) #done
+        elif destination == "RGB":
+            return RGBA2BGR(image) #done
+        elif destination == "HSL":
+            return BGRA2HSL(image) #done
+        elif destination == "HSV":
+            return BGRA2HSV(image) #done
+        elif destination == "GRAY":
+            return BGRA2GRAY(image) #done
+
+    elif source == "HSL": #need revisiting
+        if destination == "BGR":
+            return HSL2BGR(image) #done
+        elif destination == "RGBA":
+            return HSL2RGBA(image) #done
+        elif destination == "BGRA":
+            return HSL2BGRA(image) #done
+        elif destination == "RGB":
+            return HSL2RGB(image) #done
+        elif destination == "HSV":
+            return HSL2HSV(image) #done
+        elif destination == "GRAY":
+            return HSL2GRAY(image) #done
+
+    elif source == "HSV": #need revisiting
+        if destination == "BGR":
+            return HSV2BGR(image) #done
+        elif destination == "RGBA":
+            return HSV2RGBA(image) #done
+        elif destination == "BGRA":
+            return HSV2BGRA(image) #done
+        elif destination == "HSL":
+            return HSV2HSL(image) #done
+        elif destination == "RGB":
+            return HSV2RGB(image) #done
+        elif destination == "GRAY":
+            return HSV2GRAY(image) #done
+    
+def RGB2BGR(self, image):
+    converted = np.zeros_like(image)
+    converted[:,:,0] = image[:,:,2]
+    converted[:,:,2] = image[:,:,0]
+    converted[:,:,1] = image[:,:,1]
+    return converted
+
+def RGB2RGBA( image):
+    converted = np.concatenate(image, 255 * np.ones((image.shape[0], image.shpae[1]), dtype=np.int16))
+    return converted
+
+def RGB2BGRA( image):
+    converted = RGB2BGR(image)
+    converted = RGB2RGBA(image)
+    return converted
+
+def RGB2GRAY( image):
+    converted = 0.299 * image[:,:,0].astype(np.float) + 0.587 * image[:,:,1].astype(np.float) + 0.114 * image[:,:,2].astype(np.float)
+    converted = converted.astype(np.int16)
+    return converted
+
+def BGR2GRAY( image):
+    converted = RGB2BGR(image)
+    converted = RGB2GRAY(image)
+    return converted
+
+def RGBA2RGB( image):
+    converted = image[:,:,:-1]
+    return converted
+
+def RGBA2BGR( image):
+    converted = RGBA2RGB(image)
+    converted = RGB2BGR(image)
+    return converted
+
+def RGBA2BGRA( image):
+    converted = np.zeros_like(image)
+    converted[:,:,0] = image[:,:,2]
+    converted[:,:,2] = image[:,:,0]
+    converted[:,:,1] = image[:,:,1]
+    converted[:,:,3] = image[:,:,3]
+    return converted
+
+def RGBA2GRAY( image):
+    converted = RGBA2RGB(image)
+    converted = RGB2GRAY(image)
+    return converted
+
+def BGRA2GRAY( image):
+    converted = RGBA2BGRA(image)
+    converted = RGBA2GRAY(image)
+    return converted
+
+def RGB2HSL( image):
+    rprime = image[:,:,0] / 255
+    gprime = image[:,:,1] / 255
+    bprime = image[:,:,2] / 255
+    cmax = np.max(image/255, axis=2)
+    cmin = np.min(image/255, axis=2)
+    delta = cmax - cmin
+    L_channel = ( cmax + cmin ) / 2
+    S_channel = np.zeros_like(L_channel)
+    S_channel[L_channel < 0.5] = delta[L_channel < 0.5] / (cmax[L_channel<0.5] + cmax[L_channel < 0.5])
+    S_channel[L_channel > 0.5] = delta[L_channel > 0.5] / (2 - cmax[L_channel > 0.5] - cmax[L_channel > 0.5])
+    H_channel = np.zeros_like(L_channel)
+    H_channel[cmax == rprime] = (60 * ((gprime[cmax == rprime] - bprime[cmax == rprime]) / delta[cmax == rprime]) ).astype(np.int16) % 360
+    H_channel[cmax == gprime] = (60 * ((bprime[cmax == gprime] - gprime[cmax == gprime]) / delta[cmax == gprime]) + 120).astype(np.int16) % 360
+    H_channel[cmax == bprime] = (60 * ((rprime[cmax == bprime] - gprime[cmax == bprime]) / delta[cmax == bprime]) + 240).astype(np.int16) % 360
+    converted = channel_merger_apply([H_channel, S_channel, L_channel])
+    return converted
+
+def BGR2HSL( image):
+    converted = RGB2BGR(image)
+    converted = RGB2HSL(image)
+    return converted
+
+def RGBA2HSL( image):
+    converted = RGBA2RGB(image)
+    converted = RGB2HSL(image)
+    return converted
+
+def BGRA2HSL( image):
+    converted = RGBA2BGR(image)
+    converted = RGB2HSL(image)
+    return converted
+
+def RGB2HSV( image):
+    rprime = image[:,:,0] / 255
+    gprime = image[:,:,1] / 255
+    bprime = image[:,:,2] / 255
+    cmax = np.max(image/255, axis=2)
+    cmin = np.min(image/255, axis=2)
+    delta = cmax - cmin
+    S_channel = np.zeros_like(delta)
+    S_channel[cmax != 0] = delta[cmax != 0] / (cmax[cmax != 0])
+    H_channel = np.zeros_like(delta)
+    H_channel[cmax == rprime] = (60 * ((gprime[cmax == rprime] - bprime[cmax == rprime]) / delta[cmax == rprime]) ).astype(np.int16) % 360
+    H_channel[cmax == gprime] = (60 * ((bprime[cmax == gprime] - gprime[cmax == gprime]) / delta[cmax == gprime]) + 120).astype(np.int16) % 360
+    H_channel[cmax == bprime] = (60 * ((rprime[cmax == bprime] - gprime[cmax == bprime]) / delta[cmax == bprime]) + 240).astype(np.int16) % 360
+    converted = channel_merger_apply([H_channel, S_channel, cmax])
+    return converted
+
+def BGR2HSV( image):
+    converted = RGB2BGR(imgae)
+    converted = RGB2HSV(image)
+    return converted
+
+def RGBA2HSV( image):
+    converted = RGBA2RGB(image)
+    converted = RGB2HSV(image)
+    return converted
+
+def BGRA2HSV( image):
+    converted = RGBA2BGR(image)
+    converted = RGB2HSV(image)
+    return converted
+
+def HSV2RGB( image):
+    h = image[:,:,0]
+    s = image[:,:,1]
+    v = image[:,:,2]
+    C = v * s
+    X = C * (np.ones_like(C) - np.abs(((h / 60) % 2) - np.ones_like(C)))
+    m = v - C
+    rprime = np.zeros_like(C)
+    gprime = np.zeros_like(C)
+    bprime = np.zeros_like(C)
+    rprime, gprime = C, X
+    rprime[h>=60], gprime[h>=60] = X[h>=60], C[h>=60]
+    gprime[h>=120], bprime[h>=120] = C[h>=120], X[h>=120]
+    gprime[h>=180], bprime[h>=180] = X[h>=180], C[h>=180]
+    rprime[h>=240], bprime[h>=240] = X[h>=240], C[h>=240]
+    rprime[h>=300], bprime[h>=300] = C[h>=300], X[h>=300]
+
+    r = (rprime + m) *255
+    g = (gprime + m) *255
+    b = (bprime + m) *255
+    converted = channel_merger_apply([r,g,b])
+    return converted.astype(np.int16)
+
+def HSV2BGR( image):
+    converted = HSV2RGB(image)
+    converted = RGB2BGR(image)
+    return converted
+
+def HSV2BGRA( image):
+    converted = HSV2RGB(image)
+    converted = RGB2BGRA(image)
+    return converted
+
+def HSV2RGBA( image):
+    converted = HSV2RGB(image)
+    converted = RGB2RGBA(image)
+    return converted
+
+def HSV2HSL( image):
+    converted = HSV2RGB(image)
+    converted = RGB2HSL(image)
+    return converted
+
+def HSV2GRAY( image):
+    converted = HSV2RGB(image)
+    converted = RGB2GRAY(image)
+    return converted
+
+def HSL2RGB( image):
+    h = image[:,:,0]
+    s = image[:,:,1]
+    l = image[:,:,2]
+    C = (np.ones_like(h) - np.abs(2 * l - np.ones_like(h))) * s
+    X = C * (np.ones_like(C) - np.abs(((h / 60) % 2) - np.ones_like(C)))
+    m = l - C / 2
+    rprime = np.zeros_like(C)
+    gprime = np.zeros_like(C)
+    bprime = np.zeros_like(C)
+    rprime, gprime = C, X
+    rprime[h>=60], gprime[h>=60] = X[h>=60], C[h>=60]
+    gprime[h>=120], bprime[h>=120] = C[h>=120], X[h>=120]
+    gprime[h>=180], bprime[h>=180] = X[h>=180], C[h>=180]
+    rprime[h>=240], bprime[h>=240] = X[h>=240], C[h>=240]
+    rprime[h>=300], bprime[h>=300] = C[h>=300], X[h>=300]
+
+    r = (rprime + m) *255
+    g = (gprime + m) *255
+    b = (bprime + m) *255
+    converted = channel_merger_apply([r,g,b])
+    return converted.astype(np.int16)
+
+def HSL2BGR( image):
+    converted = HSL2RGB(image)
+    converted = RGB2BGR(image)
+    return converted
+
+def HSL2BGRA( image):
+    converted = HSL2RGB(image)
+    converted = RGB2BGRA(image)
+    return converted
+
+def HSL2RGBA( image):
+    converted = HSL2RGB(image)
+    converted = RGB2RGBA(image)
+    return converted
+
+def HSL2HSV( image):
+    converted = HSL2RGB(image)
+    converted = RGB2HSV(image)
+    return converted
+
+def HSL2GRAY( image):
+    converted = HSL2RGB(image)
+    converted = RGB2GRAY(image)
+    return converted
