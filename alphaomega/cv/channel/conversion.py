@@ -24,26 +24,24 @@ class Converter:
                 "BGR" or "BGRA"
                 "HSL"
                 "HSV"
-                "LAB"
             destination : The destination color space. It should be one of these options:
                 "RGB"
                 "BGR"
                 "HSL"
                 "HSV"
-                "LAB"
                 "GRAY"
 
         Returns: Nothing.
         """
         for key, value in kwargs.items():
             if key == "source":
-                if value not in ["RGB", "RGBA", "BGRA", "BGR", "HSL", "HSV", "LAB"]:
-                    print('The only accpetable values for source are: "RGB", "BGR", "HSL", "HSV", and "LAB".')
+                if value not in ["RGB", "RGBA", "BGRA", "BGR", "HSL", "HSV"]:
+                    print('The only accpetable values for source are: "RGB", "BGR", "HSL", and "HSV".')
                 else:
                     self.__src = value
             elif key == "destination":
-                if value not in ["RGB", "BGR", "RGBA", "BGRA", "HSL", "HSV", "LAB", "GRAY"]:
-                    print('The only accpetable values for source are: "RGB", "BGR", "HSL", "HSV", "LAB", and "GRAY".')
+                if value not in ["RGB", "BGR", "RGBA", "BGRA", "HSL", "HSV", "GRAY"]:
+                    print('The only accpetable values for source are: "RGB", "BGR", "HSL", "HSV", and "GRAY".')
                 else:
                     self.__dest = value
 
@@ -90,9 +88,7 @@ class Converter:
             elif self.__dest == "HSL":
                 return self.__RGB2HSL(image) #done
             elif self.__dest == "HSV":
-                return self.__RGB2HSV(image)
-            elif self.__dest == "LAB":
-                return self.__RGB2LAB(image)
+                return self.__RGB2HSV(image) #done
             elif self.__dest == "GRAY":
                 return self.__RGB2GRAY(image) #done
 
@@ -106,9 +102,7 @@ class Converter:
             elif self.__dest == "HSL":
                 return self.__BGR2HSL(image) #done
             elif self.__dest == "HSV":
-                return self.__BGR2HSV(image)
-            elif self.__dest == "LAB":
-                return self.__BGR2LAB(image)
+                return self.__BGR2HSV(image) #done
             elif self.__dest == "GRAY":
                 return self.__BGR2GRAY(image) #done
 
@@ -122,9 +116,7 @@ class Converter:
             elif self.__dest == "HSL":
                 return self.__RGBA2HSL(image) #done
             elif self.__dest == "HSV":
-                return self.__RGBA2HSV(image)
-            elif self.__dest == "LAB":
-                return self.__RGBA2LAB(image)
+                return self.__RGBA2HSV(image) #done
             elif self.__dest == "GRAY":
                 return self.__RGBA2GRAY(image) #done
 
@@ -138,61 +130,37 @@ class Converter:
             elif self.__dest == "HSL":
                 return self.__BGRA2HSL(image) #done
             elif self.__dest == "HSV":
-                return self.__BGRA2HSV(image)
-            elif self.__dest == "LAB":
-                return self.__BGRA2LAB(image)
+                return self.__BGRA2HSV(image) #done
             elif self.__dest == "GRAY":
                 return self.__BGRA2GRAY(image) #done
 
-        elif self.__src == "HSL":
+        elif self.__src == "HSL": #need revisiting
             if self.__dest == "BGR":
-                return self.__HSL2BGR(image)
+                return self.__HSL2BGR(image) #done
             elif self.__dest == "RGBA":
-                return self.__HSL2RGBA(image)
+                return self.__HSL2RGBA(image) #done
             elif self.__dest == "BGRA":
-                return self.__HSL2BGRA(image)
+                return self.__HSL2BGRA(image) #done
             elif self.__dest == "RGB":
-                return self.__HSL2RGB(image)
+                return self.__HSL2RGB(image) #done
             elif self.__dest == "HSV":
-                return self.__HSL2HSV(image)
-            elif self.__dest == "LAB":
-                return self.__HSL2LAB(image)
+                return self.__HSL2HSV(image) #done
             elif self.__dest == "GRAY":
-                return self.__HSL2GRAY(image)
+                return self.__HSL2GRAY(image) #done
 
-        elif self.__src == "HSV":
+        elif self.__src == "HSV": #need revisiting
             if self.__dest == "BGR":
-                return self.__HSV2BGR(image)
+                return self.__HSV2BGR(image) #done
             elif self.__dest == "RGBA":
-                return self.__HSV2RGBA(image)
+                return self.__HSV2RGBA(image) #done
             elif self.__dest == "BGRA":
-                return self.__HSV2BGRA(image)
+                return self.__HSV2BGRA(image) #done
             elif self.__dest == "HSL":
-                return self.__HSV2HSL(image)
+                return self.__HSV2HSL(image) #done
             elif self.__dest == "RGB":
-                return self.__HSV2RGB(image)
-            elif self.__dest == "LAB":
-                return self.__HSV2LAB(image)
+                return self.__HSV2RGB(image) #done
             elif self.__dest == "GRAY":
-                return self.__HSV2GRAY(image)
-
-        elif self.__src == "LAB":
-            if self.__dest == "BGR":
-                return self.__LAB2BGR(image)
-            elif self.__dest == "RGBA":
-                return self.__LAB2RGBA(image)
-            elif self.__dest == "BGRA":
-                return self.__LAB2BGRA(image)
-            elif self.__dest == "HSL":
-                return self.__LAB2HSL(image)
-            elif self.__dest == "HSV":
-                return self.__LAB2HSV(image)
-            elif self.__dest == "CIE":
-                return self.__LAB2CIE(image)
-            elif self.__dest == "RGB":
-                return self.__LAB2RGB(image)
-            elif self.__dest == "GRAY":
-                return self.__LAB2GRAY(image)
+                return self.__HSV2GRAY(image) #done
         
     def __RGB2BGR(self, image):
         converted = np.zeros_like(image)
@@ -278,4 +246,131 @@ class Converter:
     def __BGRA2HSL(self, image):
         converted = self.__RGBA2BGR(image)
         converted = self.__RGB2HSL(image)
+        return converted
+
+    def __RGB2HSV(self, image):
+        rprime = image[:,:,0] / 255
+        gprime = image[:,:,1] / 255
+        bprime = image[:,:,2] / 255
+        cmax = np.max(image/255, axis=2)
+        cmin = np.min(image/255, axis=2)
+        delta = cmax - cmin
+        S_channel = np.zeros_like(delta)
+        S_channel[cmax != 0] = delta[cmax != 0] / (cmax[cmax != 0])
+        H_channel = np.zeros_like(delta)
+        H_channel[cmax == rprime] = (60 * ((gprime[cmax == rprime] - bprime[cmax == rprime]) / delta[cmax == rprime]) ).astype(np.int16) % 360
+        H_channel[cmax == gprime] = (60 * ((bprime[cmax == gprime] - gprime[cmax == gprime]) / delta[cmax == gprime]) + 120).astype(np.int16) % 360
+        H_channel[cmax == bprime] = (60 * ((rprime[cmax == bprime] - gprime[cmax == bprime]) / delta[cmax == bprime]) + 240).astype(np.int16) % 360
+        converted = channel_merger_apply([H_channel, S_channel, cmax])
+        return converted
+
+    def __BGR2HSV(self, image):
+        converted = self.__RGB2BGR(imgae)
+        converted = self.__RGB2HSV(image)
+        return converted
+
+    def __RGBA2HSV(self, image):
+        converted = self.__RGBA2RGB(image)
+        converted = self.__RGB2HSV(image)
+        return converted
+
+    def __BGRA2HSV(self, image):
+        converted = self.__RGBA2BGR(image)
+        converted = self.__RGB2HSV(image)
+        return converted
+
+    def __HSV2RGB(self, image):
+        h = image[:,:,0]
+        s = image[:,:,1]
+        v = image[:,:,2]
+        C = v * s
+        X = C * (np.ones_like(C) - np.abs(((h / 60) % 2) - np.ones_like(C)))
+        m = v - C
+        rprime = np.zeros_like(C)
+        gprime = np.zeros_like(C)
+        bprime = np.zeros_like(C)
+        rprime, gprime = C, X
+        rprime[h>=60], gprime[h>=60] = X[h>=60], C[h>=60]
+        gprime[h>=120], bprime[h>=120] = C[h>=120], X[h>=120]
+        gprime[h>=180], bprime[h>=180] = X[h>=180], C[h>=180]
+        rprime[h>=240], bprime[h>=240] = X[h>=240], C[h>=240]
+        rprime[h>=300], bprime[h>=300] = C[h>=300], X[h>=300]
+
+        r = (rprime + m) *255
+        g = (gprime + m) *255
+        b = (bprime + m) *255
+        converted = channel_merger_apply([r,g,b])
+        return converted.astype(np.int16)
+
+    def __HSV2BGR(self, image):
+        converted = self.__HSV2RGB(image)
+        converted = self.__RGB2BGR(image)
+        return converted
+
+    def __HSV2BGRA(self, image):
+        converted = self.__HSV2RGB(image)
+        converted = self.__RGB2BGRA(image)
+        return converted
+
+    def __HSV2RGBA(self, image):
+        converted = self.__HSV2RGB(image)
+        converted = self.__RGB2RGBA(image)
+        return converted
+
+    def __HSV2HSL(self, image):
+        converted = self.__HSV2RGB(image)
+        converted = self.__RGB2HSL(image)
+        return converted
+
+    def __HSV2GRAY(self, image):
+        converted = self.__HSV2RGB(image)
+        converted = self.__RGB2GRAY(image)
+        return converted
+    
+    def __HSL2RGB(self, image):
+        h = image[:,:,0]
+        s = image[:,:,1]
+        l = image[:,:,2]
+        C = (np.ones_like(h) - np.abs(2 * l - np.ones_like(h))) * s
+        X = C * (np.ones_like(C) - np.abs(((h / 60) % 2) - np.ones_like(C)))
+        m = l - C / 2
+        rprime = np.zeros_like(C)
+        gprime = np.zeros_like(C)
+        bprime = np.zeros_like(C)
+        rprime, gprime = C, X
+        rprime[h>=60], gprime[h>=60] = X[h>=60], C[h>=60]
+        gprime[h>=120], bprime[h>=120] = C[h>=120], X[h>=120]
+        gprime[h>=180], bprime[h>=180] = X[h>=180], C[h>=180]
+        rprime[h>=240], bprime[h>=240] = X[h>=240], C[h>=240]
+        rprime[h>=300], bprime[h>=300] = C[h>=300], X[h>=300]
+
+        r = (rprime + m) *255
+        g = (gprime + m) *255
+        b = (bprime + m) *255
+        converted = channel_merger_apply([r,g,b])
+        return converted.astype(np.int16)
+
+    def __HSL2BGR(self, image):
+        converted = self.__HSL2RGB(image)
+        converted = self.__RGB2BGR(image)
+        return converted
+
+    def __HSL2BGRA(self, image):
+        converted = self.__HSL2RGB(image)
+        converted = self.__RGB2BGRA(image)
+        return converted
+
+    def __HSL2RGBA(self, image):
+        converted = self.__HSL2RGB(image)
+        converted = self.__RGB2RGBA(image)
+        return converted
+
+    def __HSL2HSV(self, image):
+        converted = self.__HSL2RGB(image)
+        converted = self.__RGB2HSV(image)
+        return converted
+
+    def __HSL2GRAY(self, image):
+        converted = self.__HSL2RGB(image)
+        converted = self.__RGB2GRAY(image)
         return converted
