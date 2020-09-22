@@ -82,3 +82,54 @@ class Threshold:
             return thresholded
 
 
+def threshold_apply(image, threshold_value, max_value = 255, mode = "binary"):
+    """
+    Usage: Use this function to apply thresholding to an image.
+
+    Inputs:
+        image          : The thresholding will be applied on this image.
+        threshold_value: The value of threshold
+        max_value      : Maximum value for upward operations.
+        mode     : Mode of thresholding. It could be one of these options:
+            "binary": default
+            "binary_inverse"
+            "truncate"
+            "to_zero"
+            "to_zero_inverse"
+
+    Returns:
+        The thresholded image.
+    """
+    #checking for the correct dimensions of image
+    if (len(image.shape) != 2):
+        print("Only single channel images are accepted. Please provide a single channle image.")
+        return
+
+    #checking for the true value for max_value
+    if int(max_value) <= 0 and int(max_value) > 255:
+        print("max_value should be an integer between 1 and 255.")
+        return
+
+    thresholded = np.zeros_like(image)
+    if mode == "binary":
+        thresholded[image > threshold_value] = max_value
+        return thresholded
+
+    if mode == "binary_inverse":
+        thresholded[image <= threshold_value] = max_value
+        return thresholded
+
+    if mode == "truncate":
+        thresholded[image > threshold_value] = threshold_value
+        thresholded[image <= threshold_value] = image[image <= threshold_value]
+        return thresholded
+
+    if mode == "to_zero":
+        thresholded[image > threshold_value] = image[image > threshold_value]
+        return thresholded
+    
+    if mode == "to_zero_inverse":
+        thresholded[image <= threshold_value] = image[image <= threshold_value]
+        return thresholded
+
+    print('mode should be one if this options: "binary", "binary_inverse", "truncate", "to_zero", and "to_zero_inverse"')
