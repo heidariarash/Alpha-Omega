@@ -79,7 +79,6 @@ class GaussianFilter:
         if len(image_border.shape) == 2:
             for row in range(image.shape[0]):
                 for column in range(image.shape[1]):
-                    # filtered_image[row, column] = np.sum( image_border[row : row + 2 * half_size + 1 , column :column + 2*half_size + 1] * kernel , axis=(0,1))
                     filtered_image[row, column] = np.sum( np.multiply(image_border[row : row + 2 * half_size + 1 , column :column + 2*half_size + 1] , kernel))
 
         elif len(image_border.shape) == 3:
@@ -138,7 +137,6 @@ def gaussian_filter_apply(image, kernel_size = 3, sigma = 1, border_type = "cons
     if len(image_border.shape) == 2:
         for row in range(image.shape[0]):
             for column in range(image.shape[1]):
-                # filtered_image[row, column] = np.sum( image_border[row : row + 2 * half_size + 1 , column :column + 2*half_size + 1] * kernel , axis=(0,1))
                 filtered_image[row, column] = np.sum( np.multiply(image_border[row : row + 2 * half_size + 1 , column :column + 2*half_size + 1] , kernel))
 
     elif len(image_border.shape) == 3:
