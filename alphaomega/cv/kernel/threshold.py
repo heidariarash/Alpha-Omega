@@ -1,4 +1,5 @@
 import numpy as np
+from alphaomega.cv.border.border_intropolation import border_intropolate_apply
 
 class Threshold:
     """
@@ -61,11 +62,11 @@ class Threshold:
 
         thresholded = np.zeros_like(image)
         if self.__mode == "binary":
-            thresholded[image > self.__threshold] = self.__max
+            thresholded[image > self.__threshold] = self.__max_value
             return thresholded
 
         if self.__mode == "binary_inverse":
-            thresholded[image <= self.__threshold] = self.__max
+            thresholded[image <= self.__threshold] = self.__max_value
             return thresholded
 
         if self.__mode == "truncate":
@@ -133,3 +134,116 @@ def threshold_apply(image, threshold_value, max_value = 255, mode = "binary"):
         return thresholded
 
     print('mode should be one if this options: "binary", "binary_inverse", "truncate", "to_zero", and "to_zero_inverse"')
+
+
+class AdaptiveThreshold:
+    """
+    Usage: Use this class to apply adaptive thresholding to an image.
+    """
+    def __init__(self):
+        """
+        Usage  : The constructor of AdaptiveThreshold class.
+        Inputs : Nothing.
+        Returns: An instantiation of AdaptiveThreshold class.
+        """
+        self.__max_value = 255
+        self.__method = "mean"
+        self.__mode = "binary"
+        self.__block_size = 3
+        self.__constant = 0
+
+    def config(self, **kwargs):
+        """
+        Usage: Use this method to configure the parameters of AdaptiveThreshold instantiation.
+
+        Inputs:
+            max_value: Maximum value for upward operations.
+            mode     : Mode of thresholding. It could be one of these options:
+                "binary": default
+                "binary_inverse"
+                "truncate"
+                "to_zero"
+                "to_zero_inverse"
+            method    : The method of calculating threshold. It could one of these two options: "mean" or "gaussian"
+            block_size: The block size in which the threshold is calcualted.
+            contant   : The constant for calculating the threshold.
+        
+        Returns: Nothing.
+        """
+        for key, value in kwargs.items():
+            if key == "max_value":
+                if int(value) > 0 and int(value) <= 255:
+                    self.__max = value
+                else:
+                    print("max_value should be an integer between 1 and 255.")
+            elif key == "mode":
+                if value not in ["binary", "binary_inverse", "truncate", "to_zero", "to_zero_inverse"]:
+                    print('mode should be one if this options: "binary", "binary_inverse", "truncate", "to_zero", and "to_zero_inverse"')
+                else:
+                    self.__mode = value
+            elif key == "method":
+                if value not in ["mean", "gaussian"]:
+                    print("method should be one of these two options: 'mean', and 'gaussian'.")
+                else:
+                    self.__method = value
+            elif key == "block_size":
+                if value%2 != 1:
+                    print("please provide an integer odd number as block_size.")
+                else:
+                    self.__block_size = value
+            elif key == "constant":
+                self.__constant = value
+
+    def apply(self, image):
+        """
+        Usage: Use this method to apply adaptive thresholding to an image.
+
+        Inputs:
+            image: Apaptive thresholding will be applied on this image.
+
+        Returns:
+            - The thresholded image.
+        """
+        #checking for the correct shape of the image
+        if len(image.shape) != 2:
+            print("Only single channel images are acceptable.")
+            return
+
+        half_size = int((self.__block_size-1)/2)
+        image_border = border_intropolate_apply(image, half_size, "reflect_without_border")
+
+        if self.__method == "mean":
+            kernel = np.ones((self.__block_size, self.__block_size))
+        
+        elif self.__method == "gaussian":
+            y, x = np.ogrid[-half_size:half_size+1, -half_size:half_size+1]
+            kernel = np.exp( -(y*y + x*x) / ( 2 ) )
+            kernel[ kernel < np.finfo(kernel.dtype).eps*kernel.max() ] = 0
+            normalizer = kernel.sum()
+
+        thresholded = np.zeros_like(image, dtype=np.int16)
+        threshold = np.zeros_like(image)
+        for row in range(image.shape[0]):
+            for column in range(image.shape[1]):
+                threshold[row, column] = np.sum( np.multiply(image_border[row : row + self.__block_size , column :column + self.__block_size] , kernel))
+
+        if self.__mode == "binary":
+            thresholded[image > threshold] = self.__max_value
+            return thresholded
+
+        if self.__mode == "binary_inverse":
+            thresholded[image <= threshold] = self.__max_value
+            return thresholded
+
+        if self.__mode == "truncate":
+            thresholded[image > threshold] = threshold[image > threshold]
+            thresholded[image <= threshold] = image[image <= threshold]
+            return thresholded
+
+        if self.__mode == "to_zero":
+            thresholded[image > threshold] = image[image > threshold]
+            return thresholded
+        
+        if self.__mode == "to_zero_inverse":
+            thresholded[image <= threshold] = image[image <= threshold]
+            return thresholded
