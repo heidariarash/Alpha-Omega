@@ -83,14 +83,14 @@ class Threshold:
             return thresholded
 
 
-def threshold_apply(image, threshold_value, max_value = 255, mode = "binary"):
+def threshold_apply(image, threshold, max_value = 255, mode = "binary"):
     """
     Usage: Use this function to apply thresholding to an image.
 
     Inputs:
-        image          : The thresholding will be applied on this image.
-        threshold_value: The value of threshold
-        max_value      : Maximum value for upward operations.
+        image    : The thresholding will be applied on this image.
+        threshold: The value of threshold
+        max_value: Maximum value for upward operations.
         mode     : Mode of thresholding. It could be one of these options:
             "binary": default
             "binary_inverse"
@@ -113,24 +113,24 @@ def threshold_apply(image, threshold_value, max_value = 255, mode = "binary"):
 
     thresholded = np.zeros_like(image)
     if mode == "binary":
-        thresholded[image > threshold_value] = max_value
+        thresholded[image > threshold] = max_value
         return thresholded
 
     if mode == "binary_inverse":
-        thresholded[image <= threshold_value] = max_value
+        thresholded[image <= threshold] = max_value
         return thresholded
 
     if mode == "truncate":
-        thresholded[image > threshold_value] = threshold_value
-        thresholded[image <= threshold_value] = image[image <= threshold_value]
+        thresholded[image > threshold] = threshold
+        thresholded[image <= threshold] = image[image <= threshold]
         return thresholded
 
     if mode == "to_zero":
-        thresholded[image > threshold_value] = image[image > threshold_value]
+        thresholded[image > threshold] = image[image > threshold]
         return thresholded
     
     if mode == "to_zero_inverse":
-        thresholded[image <= threshold_value] = image[image <= threshold_value]
+        thresholded[image <= threshold] = image[image <= threshold]
         return thresholded
 
     print('mode should be one if this options: "binary", "binary_inverse", "truncate", "to_zero", and "to_zero_inverse"')
@@ -246,11 +246,90 @@ class AdaptiveThreshold:
             thresholded[image > threshold] = image[image > threshold]
             return thresholded
         
-        if self.__mode == "to_zero_inverse":
-            thresholded[image <= threshold] = image[image <= threshold]
-            return thresholded
+        thresholded[image <= threshold] = image[image <= threshold]
+        return thresholded
 
 
-def adaptive_threshold_apply(image, max_value, mode, method, block_size, constant):
+def adaptive_threshold_apply(image, max_value = 255, mode = "binary", method = "mean", block_size = 3, constant = 0):
     """
+    Usage: Use this function to apply adaptive thresholding to an image.
+
+    Inputs:
+        image    : Thresholding will be applied on this image.
+        max_value: Maximum value for upward operations.
+        mode     : Mode of thresholding. It could be one of these options:
+            "binary": default
+            "binary_inverse"
+            "truncate"
+            "to_zero"
+            "to_zero_inverse"
+        method    : The method of calculating threshold. It could one of these two options: "mean" or "gaussian"
+        block_size: The block size in which the threshold is calcualted.
+        contant   : The constant for calculating the threshold.
+
+    Returns:
+        - The thresholded image.
+    """
+    #checking if max_value is inside the range 1 to 255
+    if (int(max_value <= 0) or int(max_value) > 255):
+        print("max_value should be an integer between 1 and 255.")
+        return
+
+    #checking for the true value for block_size
+    if (block_size%2 != 1):
+        print("please provide an integer odd number as block_size.")
+        return
+
+    #checking for the true parameter for mode
+    if mode not in ["binary", "binary_inverse", "truncate", "to_zero", "to_zero_inverse"]:
+            print('mode should be one if this options: "binary", "binary_inverse", "truncate", "to_zero", and "to_zero_inverse"')
+            return
+
+    #checking for the true shape of the image
+    if len(image.shape) != 2:
+        print("Only single channel images are acceptable.")
+        return
+
+    half_size = int((block_size-1)/2)
+    image_border = border_intropolate_apply(image, half_size, "reflect_without_border")
+
+    if method == "mean":
+        kernel = np.ones((block_size, block_size)) / (block_size ** 2)
     
+    elif method == "gaussian":
+        y, x = np.ogrid[-half_size:half_size+1, -half_size:half_size+1]
+        kernel = np.exp( -(y*y + x*x) / ( 2 ) )
+        kernel[ kernel < np.finfo(kernel.dtype).eps*kernel.max() ] = 0
+        normalizer = kernel.sum()
+        if normalizer != 0:
+            kernel /= normalizer
+
+    else:
+        print("method should be one of these two options: 'mean' or 'gaussian'.")
+        return
+
+    thresholded = np.zeros_like(image, dtype=np.int16)
+    threshold = np.zeros_like(image)
+    for row in range(image.shape[0]):
+        for column in range(image.shape[1]):
+            threshold[row, column] = (np.sum( np.multiply(image_border[row : row + block_size , column :column + block_size] , kernel)) - constant)
+
+    if mode == "binary":
+        thresholded[image > threshold] = max_value
+        return thresholded
+
+    if mode == "binary_inverse":
+        thresholded[image <= threshold] = max_value
+        return thresholded
+
+    if mode == "truncate":
+        thresholded[image > threshold] = threshold[image > threshold]
+        thresholded[image <= threshold] = image[image <= threshold]
+        return thresholded
+
+    if mode == "to_zero":
+        thresholded[image > threshold] = image[image > threshold]
+        return thresholded
+    
+    thresholded[image <= threshold] = image[image <= threshold]
+    return thresholded
