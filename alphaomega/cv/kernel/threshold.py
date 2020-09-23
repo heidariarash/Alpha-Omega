@@ -213,19 +213,21 @@ class AdaptiveThreshold:
         image_border = border_intropolate_apply(image, half_size, "reflect_without_border")
 
         if self.__method == "mean":
-            kernel = np.ones((self.__block_size, self.__block_size))
+            kernel = np.ones((self.__block_size, self.__block_size)) / (self.__block_size ** 2)
         
         elif self.__method == "gaussian":
             y, x = np.ogrid[-half_size:half_size+1, -half_size:half_size+1]
             kernel = np.exp( -(y*y + x*x) / ( 2 ) )
             kernel[ kernel < np.finfo(kernel.dtype).eps*kernel.max() ] = 0
             normalizer = kernel.sum()
+            if normalizer != 0:
+                kernel /= normalizer
 
         thresholded = np.zeros_like(image, dtype=np.int16)
         threshold = np.zeros_like(image)
         for row in range(image.shape[0]):
             for column in range(image.shape[1]):
-                threshold[row, column] = np.sum( np.multiply(image_border[row : row + self.__block_size , column :column + self.__block_size] , kernel))
+                threshold[row, column] = (np.sum( np.multiply(image_border[row : row + self.__block_size , column :column + self.__block_size] , kernel)) - self.__constant)
 
         if self.__mode == "binary":
             thresholded[image > threshold] = self.__max_value
@@ -247,3 +249,8 @@ class AdaptiveThreshold:
         if self.__mode == "to_zero_inverse":
             thresholded[image <= threshold] = image[image <= threshold]
             return thresholded
+
+
+def adaptive_threshold_apply(image, max_value, mode, method, block_size, constant):
+    """
+    
