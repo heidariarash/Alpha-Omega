@@ -62,11 +62,11 @@ class Threshold:
 
         thresholded = np.zeros_like(image)
         if self.__mode == "binary":
-            thresholded[image > self.__threshold] = self.__max_value
+            thresholded[image > self.__threshold] = self.__max
             return thresholded
 
         if self.__mode == "binary_inverse":
-            thresholded[image <= self.__threshold] = self.__max_value
+            thresholded[image <= self.__threshold] = self.__max
             return thresholded
 
         if self.__mode == "truncate":
@@ -81,6 +81,46 @@ class Threshold:
         if self.__mode == "to_zero_inverse":
             thresholded[image <= self.__threshold] = image[image <= self.__threshold]
             return thresholded
+
+    def otsu(self, image):
+        """
+        Usage: Use this method to find the best threshold value with the help of otsu algorithm.
+
+        Inputs:
+            image: The otsu algorithm will be applied on this image.
+
+        Returns:
+            - The threshold value calculated with the help of otsu algorithm.
+        """
+        #checking for the true shape of the image.
+        if (len(image.shape) != 2):
+            print("Only single channel images are accepted. Please provide a single channle image.")
+            return
+
+        #calculating maximum and minimum intensities present in the image.
+        max_intensity_present = np.max(image, axis= (0,1))
+        min_intensity_present = np.min(image, axis= (0,1))
+        best_within_class = np.Inf
+
+        #if there are only one or two intensities present in the image, just return the greater one.
+        if max_intensity_present == min_intensity_present or max_intensity_present-1 == min_intensity_present:
+            return max_intensity_present
+
+        #if there are only three intensities present, return the middle one.
+        if max_intensity_present -2 == min_intensity_present:
+            return max_intensity_present - 1
+
+        for thresh in range(min_intensity_present + 1, max_intensity_present):
+            background = len(image[image<=thresh]) / (image.shape[0] * image.shape[1])
+            foreground = 1 - background
+            background_var = np.var(image[image<=thresh])
+            foreground_var = np.var(image[image>thresh])
+            within_class = foreground * foreground_var + background * background_var
+            if within_class < best_within_class:
+                best_within_class = within_class
+                best_thresh = thresh
+
+        return best_thresh
 
 
 def threshold_apply(image, threshold, max_value = 255, mode = "binary"):
@@ -134,6 +174,55 @@ def threshold_apply(image, threshold, max_value = 255, mode = "binary"):
         return thresholded
 
     print('mode should be one if this options: "binary", "binary_inverse", "truncate", "to_zero", and "to_zero_inverse"')
+    
+
+def threshold_otsu(image):
+    """
+    Usage: Use this method to find the best threshold value with the help of otsu algorithm.
+
+    Inputs:
+        image: The otsu algorithm will be applied on this image.
+
+    Returns:
+        - The threshold value calculated with the help of otsu algorithm.
+    """
+    #checking for the true shape of the image.
+    if (len(image.shape) != 2):
+        print("Only single channel images are accepted. Please provide a single channle image.")
+        return
+
+    #calculating maximum and minimum intensities present in the image.
+    max_intensity_present = np.max(image, axis= (0,1))
+    min_intensity_present = np.min(image, axis= (0,1))
+    best_within_class = np.Inf
+
+    #if there are only one or two intensities present in the image, just return the greater one.
+    if max_intensity_present == min_intensity_present or max_intensity_present-1 == min_intensity_present:
+        return max_intensity_present
+
+    #if there are only three intensities present, return the middle one.
+    if max_intensity_present -2 == min_intensity_present:
+        return max_intensity_present - 1
+
+    for thresh in range(min_intensity_present + 1, max_intensity_present):
+        background = len(image[image<=thresh]) / (image.shape[0] * image.shape[1])
+        foreground = 1 - background
+        background_var = np.var(image[image<=thresh])
+        foreground_var = np.var(image[image>thresh])
+        within_class = foreground * foreground_var + background * background_var
+        if within_class < best_within_class:
+            best_within_class = within_class
+            best_thresh = thresh
+
+    return best_thresh
+
+
+
+###################################################################################################################################################
+###################################################################################################################################################
+########################################                         NEW CLASS                      ###################################################
+###################################################################################################################################################
+###################################################################################################################################################
 
 
 class AdaptiveThreshold:
