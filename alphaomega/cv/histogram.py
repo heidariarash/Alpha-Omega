@@ -15,13 +15,17 @@ class Histogram:
         self.__bins = 256
         self.__hist = None
         self.__shape = 0
+        self.__max_value = 256
+        self.__min_value = 0
 
     def config(self, **kwargs):
         """
         Usage: Use this method to configure different parameteres of Histogram instantiation.
 
         Inputs:
-            bins: Number of bins for histogram.
+            bins     : Number of bins for histogram.
+            max_value: The maximum value present in histogram of the image. It usually is 256.
+            min_value: The minimum value present in histogram of the imgea. It usually is 0.
 
         Returns: Nothing.
         """
@@ -31,6 +35,15 @@ class Histogram:
                     print("bins should be an integer between 1 and 256.")
                 else:
                     self.__bins = value
+            elif key == "max_value":
+                self.__max_value = value
+            elif key == "min_value":
+                self.__min_value = value
+
+        if self.__min_value >= self.__max_value:
+            print("min_value can not be greater than or equal to max_value. Both reseted to 0 and 256 respectively.")
+            self.__max_value = 256
+            self.__min_value = 0
 
     def apply(self, image):
         """
@@ -56,7 +69,7 @@ class Histogram:
             print("image should be 2D(single channel) or 3D(multi channel).")
             return
 
-        bins = np.linspace(256, 0, self.__bins + 1)
+        bins = np.linspace(self.__max_value, self.__min_value, self.__bins + 1)
         if (self.__shape == 2):
             hist = np.zeros(len(bins) - 1, dtype=np.int32)
             hist[self.__bins - 1] = len(image[image >= bins[1]])
