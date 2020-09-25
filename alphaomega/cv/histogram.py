@@ -17,6 +17,7 @@ class Histogram:
         self.__shape = 0
         self.__max_value = 256
         self.__min_value = 0
+        self.__applied = False
 
     def config(self, **kwargs):
         """
@@ -44,6 +45,29 @@ class Histogram:
             print("min_value can not be greater than or equal to max_value. Both reseted to 0 and 256 respectively.")
             self.__max_value = 256
             self.__min_value = 0
+
+    def get(self, attribute):
+        """
+        Usage: Use this method to access different attributes of Histogram instantiation.
+
+        Inputs:
+            attirubte: The attribute of desire. It can be one of these options:
+                "image"   : The original image of the histogram.
+                "histogram: The histogram calculated from the image.
+
+        Returns:
+            The value of desired attribute.
+        """
+        if not self.__applied:
+            print("You should use the apply method first, Then using this method is possible.")
+
+        if attribute == "histogram":
+            return self.__hist
+        
+        if attribute == "image":
+            return self.__image
+
+        print('Please specify the correct attribute. Options are: "histogram" and "image".')
 
     def apply(self, image):
         """
@@ -87,6 +111,7 @@ class Histogram:
                 hist[ch_index, self.__bins - index - 2] = len(channel[channel >= bin]) - len(channel[channel>= bins[index + 1]])
 
         self.__hist = hist
+        self.__applied = True
         return hist
 
 
