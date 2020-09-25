@@ -40,15 +40,6 @@ class Histogram:
                 self.__max_value = value
             elif key == "min_value":
                 self.__min_value = value
-            elif key == "inplace":
-                self.__inplace = value
-            elif key == "threshold_value":
-                self.__threshold_value = int(value)
-            elif key == "threshold_type":
-                if value not in ["binary", "binary_inverse", "truncate", "to_zero", "to_zero_inverse"]:
-                    print('threshold_type should be one of these options: "binary", "binary_inverse", "truncate", "to_zero", or "to_zero_inverse"')
-                else:
-                    self.__threshold_type = value
 
         if self.__min_value >= self.__max_value:
             print("min_value can not be greater than or equal to max_value. Both reseted to 0 and 256 respectively.")
