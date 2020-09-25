@@ -31,8 +31,8 @@ class Histogram:
         """
         for key, value in kwargs.items():
             if key == "bins":
-                if int(value) <=0 or int(value) > 256:
-                    print("bins should be an integer between 1 and 256.")
+                if int(value) <=0:
+                    print("bins should be a positive integer.")
                 else:
                     self.__bins = value
             elif key == "max_value":
@@ -88,3 +88,57 @@ class Histogram:
 
         self.__hist = hist
         return hist
+
+
+def histogram_apply(image, bins = 256, max_value = 255, min_value = 0):
+    """
+    Usage: Use this function to compute the histogram of an image.
+
+    Inputs:
+        image    : The histogram of this image will be calculated.
+        bins     : Number of bins for histogram.
+        max_value: The maximum value present in histogram of the image. It usually is 256.
+        min_value: The minimum value present in histogram of the imgea. It usually is 0.
+
+    Returns:
+        - if the input image is single channel, the output will be a 1D numpy array including the value of each bin.
+        - if the input image is multi channel, the output will be a 2D numpy array including the value of each bin for each channel.
+    """
+    #checking fot the correct value of bins.
+    if int(bins) <=0:
+        print("bins should be an positive integer.")
+        return
+    
+    #checking if min_value is actually less than max_value.
+    if min_value >= max_value:
+        print("min_value can not be greater than or equal to max_value.")
+        return
+    
+    #checking for the correct shape of the image.
+    if len(image.shape) == 2 or ( len(image.shape) == 3 and image.shape[2] == 1):
+        shape = 2
+    elif len(image.shape) == 3:
+        shape = 3
+    else:
+        print("image should be 2D(single channel) or 3D(multi channel).")
+        return
+
+    #applying histogramization
+    bins = np.linspace(max_value, _min_value, bins + 1)
+    if (shape == 2):
+        hist = np.zeros(len(bins) - 1, dtype=np.int32)
+        hist[bins - 1] = len(image[image >= bins[1]])
+        for index, bin in enumerate(bins[2:]):
+            hist[bins - index - 2] = len(image[image >= bin]) - len(image[image>= bins[index + 1]])
+
+        hist = hist
+        return hist
+
+    channels = channel_splitter_apply(image)
+    hist = np.zeros((len(channels), len(bins) - 1), dtype=np.int32)
+    for ch_index, channel in enumerate(channels):
+        hist[ch_index, bins - 1] = len(channel[channel >= bins[1]])
+        for index, bin in enumerate(bins[2:]):
+            hist[ch_index, bins - index - 2] = len(channel[channel >= bin]) - len(channel[channel>= bins[index + 1]])
+
+    return hist
