@@ -13,6 +13,7 @@ class PCA:
         """
         self.__new_features = 2
         self.__transform = None
+        self.__explain = None
         self.__shape = 0
 
     def config(self, **kwargs):
@@ -20,7 +21,7 @@ class PCA:
         Usage: Use this method to configure the parameters of PCA instantiation.
 
         Inputs:
-            new_features: The number of new features.
+            new_features: The number of new features. You can choose this parameter after training the model. This parameter only affects apply method.
 
         Returns: Nothing.
         """
@@ -56,11 +57,8 @@ class PCA:
         #calculating eigen vectors and eigen values
         eig_values, eig_vectors = np.linalg.eig(cov_matrix)
 
-        explained_variances = []
-        for i in range(len(eig_values)):
-            explained_variances.append(eig_values[i] / np.sum(eig_values))
-
         self.__transform =  eig_vectors
+        self.__explain = eig_values
 
     def apply(self, features):
         """
@@ -81,6 +79,11 @@ class PCA:
             print("number of features should be equivalent to the number of features of training data.")
             return
 
+        #checking if the model is trained.
+        if not self.__transform:
+            print("Please train the model first.")
+            return
+
         #nomalizing the features.    
         features_scaled = z_score_normalizer(features, features)
         new_feat = np.zeros((features.shape[0], self.__new_features))
@@ -91,6 +94,22 @@ class PCA:
 
         return new_feat
 
-    def explained_variance(self, features):
+    def explained_variance(self):
         """
-        Usage:
+        Usage: Use this method to find out the explained variance for each new feature.
+
+        Inputs: Nothing.
+
+        Returns:
+            - A numpy array, each element of that indicates the explained variance by corresponding index feature.
+        """
+        #checking if the model is trained.
+        if not self.__transform:
+            print("Please train the model first.")
+            return
+
+        explained_variances = []
+        for i in range(len(self.__explain)):
+            explained_variances.append(self.__explain[i] / np.sum(self.__explain))
+
+        return np.array(explained_variances)
