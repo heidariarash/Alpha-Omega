@@ -1,5 +1,4 @@
 import numpy as np
-from alphaomega.preprocessing.normalization.zscore import z_score_normalizer
 
 class PCA:
     """
@@ -15,6 +14,8 @@ class PCA:
         self.__transform = None
         self.__explain = None
         self.__shape = 0
+        self.__mean = 0
+        self.__std = 0
 
     def config(self, **kwargs):
         """
@@ -49,7 +50,9 @@ class PCA:
         self.__shape = train_features.shape[1]
 
         #normalizing the featurs
-        features = z_score_normalizer(train_features, train_features)
+        self.__mean = np.mean(train_features,axis = 0)
+        self.__std = np.std(train_features, axis = 0)
+        features = (train_features - self.__mean) / (self.__std)
 
         #calculating covariance matrix
         cov_matrix = np.cov(features.T)
@@ -85,7 +88,7 @@ class PCA:
             return
 
         #nomalizing the features.    
-        features_scaled = z_score_normalizer(features, features)
+        features_scaled = (features - self.__mean) / (self.__std)
         new_feat = np.zeros((features.shape[0], self.__new_features))
 
         #applying dimension reductino.
@@ -113,3 +116,53 @@ class PCA:
             explained_variances.append(self.__explain[i] / np.sum(self.__explain))
 
         return np.array(explained_variances)
+
+
+def pca_apply(train_features, features, new_features = 2):
+    """
+    Usage: Use this function to train a pca model.
+
+    Inputs:
+        train_features: The PCA algorithm will get trained based on these features.
+        features      : The trained PCA algorihm reduced the dimensions of these featueres.
+        new_feateurs  : The train features. Based on these features will The transformation matrix computed.
+
+    Returns:
+        - New reduced features.
+    """
+    #checking for the true shapes of train_features and features.
+    if len(features.shape) != 2:
+        print("features should be tabular (i.e. have 2 dimensions).")
+        return
+
+    if len(train_features.shape) != 2:
+        print("train_features should be tabular (i.e. have 2 dimensions).")
+        return
+
+    if features.shape[1] != train_features.shape[1]:
+        print("number of features should be equivalent to the number of features of training data.")
+        return
+
+    #checking for the correct value for new_features
+    if int(new_features) < 1:
+        print("The number of new features should be a positive integer.")
+        return
+
+    mean = np.mean(train_features,axis = 0)
+    std = np.std(train_features, axis = 0)
+    scaled_train = (train_features - mean) / (std)
+    scaled_test = (features - mean) / (std)
+
+    #calculating covariance matrix
+    cov_matrix = np.cov(scaled_train.T)
+
+    #calculating eigen vectors and eigen values
+    eig_values, eig_vectors = np.linalg.eig(cov_matrix)
+
+    new_feat = np.zeros((features.shape[0], new_features))
+
+    #applying dimension reductino.
+    for i in range(new_features):
+        new_feat[:,i] = scaled_test.dot(eig_vectors.T[i])
+
+    return new_feat
