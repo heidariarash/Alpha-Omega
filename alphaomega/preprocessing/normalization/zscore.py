@@ -108,7 +108,7 @@ class ZScoreNormalizer:
         return data_process
 
 
-def z_score_normalizer(train_features, features, columns = None):
+def z_score_normalizer_apply(train_features, features, columns = None):
     """
     Usage  : Use this function to transform your features to normalized ones such as normalize data has a mean of zero and a standard devaiation of one.
 

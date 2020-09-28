@@ -131,7 +131,7 @@ class ClippingNormalizer:
         return data_process
 
 
-def clipping_normalizer(train_features, features, min_percentile = 10, max_percentile = 90, columns = None):
+def clipping_normalizer_apply(train_features, features, min_percentile = 10, max_percentile = 90, columns = None):
     """
     Usage  : Use this function to transform your features to normalized ones such as it does not be more or less than some certain percentile.
 

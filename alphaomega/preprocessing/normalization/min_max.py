@@ -107,7 +107,7 @@ class MinMaxNormalizer:
         return data_process
 
 
-def min_max_normalizer(train_features, features, columns = None):
+def min_max_normalizer_apply(train_features, features, columns = None):
     """
     Usage  : Use this function to transform your features to normalized ones between 0 and 1.
 
