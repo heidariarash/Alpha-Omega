@@ -125,8 +125,8 @@ def z_score_normalizer_train(train_features):
         return
 
     #calculation minimum and maximum of each feature.
-    mean = np.mean(data_process,axis = 0)
-    std = np.std(data_process, axis = 0)
+    mean = np.mean(train_features,axis = 0)
+    std = np.std(train_features, axis = 0)
 
     return mean, std
 

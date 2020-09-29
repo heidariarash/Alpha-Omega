@@ -123,11 +123,11 @@ def min_max_normalizer_train(train_features):
         return
 
     #calculation minimum and maximum of each feature.
-    maximum = np.max(data_process,axis = 0)
-    minimum = np.min(data_process, axis = 0)
+    maximum = np.max(train_features,axis = 0)
+    minimum = np.min(train_features, axis = 0)
 
     return maximum, minimum
-    
+
 
 def min_max_normalizer_apply(features, normalizer_params, columns = None):
     """
