@@ -107,14 +107,37 @@ class ZScoreNormalizer:
         data_process[: ,self.__columns] = (data_process[: ,self.__columns] - self.__mean) / (self.__std)
         return data_process
 
+        
 
-def z_score_normalizer_apply(train_features, features, columns = None):
+def z_score_normalizer_train(train_features):
+    """
+    Usage: Use this function to obtain the parameters of z_score_normalizer.
+
+    Inputs:
+        train_features: The features to get the statistics from. It's equivalent to training data.
+
+    Returns:
+        - The z_score_normalizer parameters. This output is one of the inputs of z_score normalizer_apply functino.
+    """
+    #checking if the shape of features are correct
+    if len(train_features.shape) != 2:
+        print("Only tabular data is acceptable (e.g. 2 dimensional).")
+        return
+
+    #calculation minimum and maximum of each feature.
+    mean = np.mean(data_process,axis = 0)
+    std = np.std(data_process, axis = 0)
+
+    return mean, std
+
+
+def z_score_normalizer_apply(features, z_score_params, columns = None):
     """
     Usage  : Use this function to transform your features to normalized ones such as normalize data has a mean of zero and a standard devaiation of one.
 
     Inputs :
-        train_features: The features to get the statistics from. It's equivalent to training data.
         features      : Features to be normalized. This is all your features (including train and test), or you can use this function twice. Once with training data as this parameter. Once with test data as this parameter.
+        z_score_params: The paramters of z score normalizer. You can obtain these parameters by using z_score_normalizer_train function.
         columns       : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
     
     Returns: 
@@ -122,32 +145,23 @@ def z_score_normalizer_apply(train_features, features, columns = None):
             1. The columns marked to be normalized are normalized.
             2. The columns not marked to be normalized are untouched.
     """
+    mean, std = z_score_params
+
     #checking if the shape of features are correct
-    if (len(train_features.shape) != 2) or (len(features.shape) != 2 ):
-        print("Only tabular data is acceptable.")
+    if len(features.shape) != 2:
+        print("Only tabular data is acceptable (e.g. 2 dimensional).")
         return
     
     #checking if number of features in training data and data to be normalized are equal.
-    if (train_features.shape[1] != features.shape[1]):
+    if (len(mean.shape) != features.shape[1]):
         print("Number of features to be normalized should be equal to the number of training features.")
         return
-    
-    #checking for the requested columns to be normalized. If None, all features will normalize.
-    if columns:
-        data_process = train_features[:,columns].copy()
-    else:
-        data_process = train_features.copy()
-
-    #calculation minimum and maximum of each feature.
-    mean = np.mean(data_process,axis = 0)
-    std = np.std(data_process, axis = 0)
-    
-    data_process = features.copy()
         
     #checking if all columns should be normalized. If columns is None, all columns will be normalized.
     if not columns:
-        return (data_process - mean) / (std)
+        return (featuers - mean) / (std)
 
+    scaled_featuers = feateurs.copy()
     #if only some columns should get normalized, we do it with the next command.
-    data_process[: ,columns] = (data_process[: ,columns] - mean) / (std)
-    return data_process
+    scaled_featuers[: ,columns] = (featuers[: ,columns] - mean) / (std)
+    return scaled_featuers
