@@ -107,46 +107,59 @@ class MinMaxNormalizer:
         return data_process
 
 
-def min_max_normalizer_apply(train_features, features, columns = None):
+def min_max_normalizer_train(train_features):
+    """
+    Usage: Use this functin to obtain the parameters of min_max_normalizer.
+
+    Inputs:
+        train_features: The features to get the statistics from. It's equivalent to training data.
+
+    Returns:
+        - The parameters of min_max_normalizer. The output of this function is one of the inputs of min_max_normalizer_apply function.
+    """
+    #checking if the shape of features is correct
+    if (len(train_features.shape) != 2):
+        print("Only tabular data is acceptable (e.g. 2 dimensional).")
+        return
+
+    #calculation minimum and maximum of each feature.
+    maximum = np.max(data_process,axis = 0)
+    minimum = np.min(data_process, axis = 0)
+
+    return maximum, minimum
+    
+
+def min_max_normalizer_apply(features, normalizer_params, columns = None):
     """
     Usage  : Use this function to transform your features to normalized ones between 0 and 1.
 
     Inputs :
-        train_features: The features to get the statistics from. It's equivalent to training data.
-        features      : Features to be normalized. This is all your features (including train and test), or you can use this function twice. Once with training data as this parameter. Once with test data as this parameter.
-        columns       : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
+        features         : Features to be normalized. This is all your features (including train and test), or you can use this function twice. Once with training data as this parameter. Once with test data as this parameter.
+        normalizer_params: The parameters of min_max_normalizer. You can obtain these parameters by using min_max_normalizer_train function.
+        columns          : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
     
     Returns: 
         - a numpy array, where:
             1. The columns marked to be normalized are normalized.
             2. The columns not marked to be normalized are untouched.
     """
-    #checking if the shape of features are correct
-    if (len(train_features.shape) != 2) or (len(features.shape) != 2 ):
-        print("Only tabular data is acceptable.")
+    maximum, minimum = normalizer_params
+
+    #checking if the shape of features is correct
+    if (len(features.shape) != 2 ):
+        print("Only tabular data is acceptable (e.g. 2 dimensional).")
         return
     
     #checking if number of features in training data and data to be normalized are equal.
-    if (train_features.shape[1] != features.shape[1]):
+    if (len(mean.shape) != features.shape[1]):
         print("Number of features to be normalized should be equal to the number of training features.")
         return
-    
-    #checking for the requested columns to be normalized. If None, all features will normalize.
-    if columns:
-        data_process = train_features[:,columns].copy()
-    else:
-        data_process = train_features.copy()
-
-    #calculation minimum and maximum of each feature.
-    maximum = np.max(data_process,axis = 0)
-    minimum = np.min(data_process, axis = 0)
-    
-    data_process = features.copy()
         
     #checking if all columns should be normalized. If columns is None, all columns will be normalized.
     if not columns:
-        return (data_process - minimum) / (maximum - minimum)
+        return (features - minimum) / (maximum - minimum)
 
+    scaled_features = features.copy()
     #if only some columns should get normalized, we do it with the next command.
-    data_process[: ,columns] = (data_process[: ,columns] - minimum) / (maximum - minimum)
-    return data_process
+    scaled_features[: ,columns] = (features[: ,columns] - minimum) / (maximum - minimum)
+    return scaled_features
