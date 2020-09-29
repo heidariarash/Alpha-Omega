@@ -131,57 +131,70 @@ class ClippingNormalizer:
         return data_process
 
 
-def clipping_normalizer_apply(train_features, features, min_percentile = 10, max_percentile = 90, columns = None):
+def clipping_normalizer_train(train_features, min_percentile = 10, max_percentile = 90):
+    """
+    Usage: Use this function to obtain the clipping_normalizer parameters.
+
+    Inputs:
+        train_features: The feature matrix used to extract the statistics.
+        max_percentile: maximum percentile to keep. values greater than max_percentile will be clipped to this value.
+        min_percentile: minimum percentile to keep. values less than min_percentile will be clipped to this value.
+
+    Returns:
+        - - The parameters of clipping_normalizer. The output of this function is one of the inputs of clipping_normalizer_apply function.
+    """
+    #checking if the range of min and max percentile is correct.
+    if (max_percentile > 100 or min_percentile < 0 or max_percentile <= min_percentile):
+        print("min_percentile should be less than max_percentile and both need to be between 0 and 100")
+        return
+
+    #checking if the shape of features are correct
+    if (len(train_features.shape) != 2):
+        print("Only tabular data is acceptable (e.g. w dimensional).")
+        return
+
+    #calculation minimum and maximum of each feature.
+    maximum = np.percentile(train_features, max_percentile, axis = 0)
+    minimum = np.percentile(train_features, min_percentile, axis = 0 )
+
+    return maximum, minimum
+
+
+def clipping_normalizer_apply(features, normalizer_params, columns = None):
     """
     Usage  : Use this function to transform your features to normalized ones such as it does not be more or less than some certain percentile.
 
     Inputs :
-        train_features: The feature matrix used to extract the statistics.
-        features      : Features to be normalized. This is all your features (including train and test), or you can use this function twice. Once with traini
-        max_percentile: maximum percentile to keep. values greater than max_percentile will be clipped to this value.
-        min_percentile: minimum percentile to keep. values less than min_percentile will be clipped to this value.
-        columns       : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
+        features         : Features to be normalized. This is all your features (including train and test), or you can use this function twice. Once with traini
+        normalizer_params: The parameters of clipping_normalizer. You can obtain these parameters by using clipping_normalizer_train function.
+        columns          : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
 
     Returns:
         - a numpy array, where:
             1. The columns marked to be normalized in train method are normalized.
             2. The columns not marked to be normalized are untouched.
     """
-    #checking if the range of min and max percentile is correct.
-    if (max_percentile > 100 or min_percentile < 0 or max_percentile <= min_percentile):
-        print("min_percentile should be less than max_percentile and both need to be between 0 and 100")
-        return
-    
+    maximum, minimum = normalizer_params
+
     #checking if the shape of features are correct
-    if (len(train_features.shape) != 2) or (len(features.shape) != 2 ):
-        print("Only tabular data is acceptable.")
+    if (len(features.shape) != 2):
+        print("Only tabular data is acceptable (e.g. w dimensional).")
         return
     
     #checking if number of features in training data and data to be normalized are equal.
-    if (train_features.shape[1] != features.shape[1]):
+    if (len(maximum.shape) != features.shape[1]):
         print("Number of features to be normalized should be equal to the number of training features.")
         return
     
-    if columns:
-        columns = list(set(columns))
-        data_process = train_features[:,columns].copy()
-    else:
-        data_process = train_features.copy()
-        columns = list(range(train_features.shape[1]))
-
-    #calculation minimum and maximum of each feature.
-    maximum = np.percentile(data_process, max_percentile, axis = 0)
-    minimum = np.percentile(data_process, min_percentile, axis = 0 )
-    
-    data_process = features.copy()
+    scaled_features = features.copy()
         
     for column in range(features.shape[1]):
         if column not in columns:
             continue
         for row in range(features.shape[0]):
-            if data_process[row ,column] > maximum[columns.index(column)]:
-                data_process[row, column] = maximum[columns.index(column)]
-            elif data_process[row, column] < minimum[columns.index(column)]:
-                data_process[row, column] = minimum[columns.index(column)]
+            if scaled_features[row ,column] > maximum[columns.index(column)]:
+                scaled_features[row, column] = maximum[columns.index(column)]
+            elif scaled_features[row, column] < minimum[columns.index(column)]:
+                scaled_features[row, column] = minimum[columns.index(column)]
 
-    return data_process
+    return scaled_features
