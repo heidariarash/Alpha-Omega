@@ -16,6 +16,7 @@ class PCA:
         self.__shape = 0
         self.__mean = 0
         self.__std = 0
+        self.__applied = False
 
     def config(self, **kwargs):
         """
@@ -59,9 +60,10 @@ class PCA:
 
         #calculating eigen vectors and eigen values
         eig_values, eig_vectors = np.linalg.eig(cov_matrix)
-
+        
         self.__transform =  eig_vectors
         self.__explain = eig_values
+        self.__applied = True
 
     def apply(self, features):
         """
@@ -83,7 +85,7 @@ class PCA:
             return
 
         #checking if the model is trained.
-        if not self.__transform:
+        if not self.__applied:
             print("Please train the model first.")
             return
 
@@ -107,7 +109,7 @@ class PCA:
             - A numpy array, each element of that indicates the explained variance by corresponding index feature.
         """
         #checking if the model is trained.
-        if not self.__transform:
+        if not self.__applied:
             print("Please train the model first.")
             return
 
@@ -118,28 +120,49 @@ class PCA:
         return np.array(explained_variances)
 
 
-def pca_apply(train_features, features, new_features = 2):
+def pca_train(train_features):
     """
     Usage: Use this function to train a pca model.
 
     Inputs:
         train_features: The PCA algorithm will get trained based on these features.
-        features      : The trained PCA algorihm reduced the dimensions of these featueres.
-        new_feateurs  : The train features. Based on these features will The transformation matrix computed.
 
     Returns:
-        - New reduced features.
+        - The PCA parameters. This parameter is one of the inputs of pca_apply function.
     """
-    #checking for the true shapes of train_features and features.
-    if len(features.shape) != 2:
-        print("features should be tabular (i.e. have 2 dimensions).")
-        return
-
+    #checking for the correct shapes of train_features
     if len(train_features.shape) != 2:
         print("train_features should be tabular (i.e. have 2 dimensions).")
         return
 
-    if features.shape[1] != train_features.shape[1]:
+    mean = np.mean(train_features,axis = 0)
+    std = np.std(train_features, axis = 0)
+    scaled_train = (train_features - mean) / (std)
+
+    #calculating covariance matrix
+    cov_matrix = np.cov(scaled_train.T)
+
+    #calculating eigen vectors and eigen values
+    _ , eig_vectors = np.linalg.eig(cov_matrix)
+    return mean, std, eig_vectors
+
+
+def pca_apply(features, pca_params, new_features = 2):
+    """
+    Usage: Use this function to apply PCA to your features.
+
+    Inputs:
+        features    : The trained PCA algorihm reduced the dimensions of these featueres.
+        pca_params  : The parameters of PCA algorithm. You can obtain this parameters using pca_train function.
+        new_feateurs: The train features. Based on these features will The transformation matrix computed.
+    """
+    mean, std, eig_vectors = pca_params
+    #checking for the correct shape of features:
+    if len(features.shape) != 2:
+        print("features should be tabular (i.e. have 2 dimensions).")
+        return
+    
+    if features.shape[1] != eig_vectors.shape[0]:
         print("number of features should be equivalent to the number of features of training data.")
         return
 
@@ -148,21 +171,13 @@ def pca_apply(train_features, features, new_features = 2):
         print("The number of new features should be a positive integer.")
         return
 
-    mean = np.mean(train_features,axis = 0)
-    std = np.std(train_features, axis = 0)
-    scaled_train = (train_features - mean) / (std)
-    scaled_test = (features - mean) / (std)
-
-    #calculating covariance matrix
-    cov_matrix = np.cov(scaled_train.T)
-
-    #calculating eigen vectors and eigen values
-    eig_values, eig_vectors = np.linalg.eig(cov_matrix)
+    #normalizing the features.
+    scaled_features = (features - mean) / (std)
 
     new_feat = np.zeros((features.shape[0], new_features))
 
     #applying dimension reductino.
     for i in range(new_features):
-        new_feat[:,i] = scaled_test.dot(eig_vectors.T[i])
+        new_feat[:,i] = scaled_features.dot(eig_vectors.T[i])
 
     return new_feat
