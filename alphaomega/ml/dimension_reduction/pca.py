@@ -154,7 +154,10 @@ def pca_apply(features, pca_params, new_features = 2):
     Inputs:
         features    : The trained PCA algorihm reduced the dimensions of these featueres.
         pca_params  : The parameters of PCA algorithm. You can obtain this parameters using pca_train function.
-        new_feateurs: The train features. Based on these features will The transformation matrix computed.
+        new_feateurs: The number of new features.
+
+    Returns:
+        - New reduced features.
     """
     mean, std, eig_vectors = pca_params
     #checking for the correct shape of features:
@@ -181,3 +184,35 @@ def pca_apply(features, pca_params, new_features = 2):
         new_feat[:,i] = scaled_features.dot(eig_vectors.T[i])
 
     return new_feat
+
+
+def pca_explained_variance(train_features):
+    """
+    Usage: Use this function to obtain the explained variance of each new feature if you apply PCA algorithm to your featuers.
+
+    Inputs:
+        train_features: Explained variance will get calculated based on these featurs.
+
+    Returns:
+        - A numpy array, each element of that indicates the explained variance by corresponding index feature.
+    """
+    #checking for the correct shapes of train_features
+    if len(train_features.shape) != 2:
+        print("train_features should be tabular (i.e. have 2 dimensions).")
+        return
+
+    mean = np.mean(train_features,axis = 0)
+    std = np.std(train_features, axis = 0)
+    scaled_train = (train_features - mean) / (std)
+
+    #calculating covariance matrix
+    cov_matrix = np.cov(scaled_train.T)
+
+    #calculating eigen vectors and eigen values
+    eig_values , _ = np.linalg.eig(cov_matrix)
+
+    explained_variances = []
+    for i in range(len(eig_values)):
+        explained_variances.append(eig_values[i] / np.sum(eig_values))
+
+    return np.array(explained_variances)
