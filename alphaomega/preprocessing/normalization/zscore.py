@@ -131,21 +131,21 @@ def z_score_normalizer_train(train_features):
     return mean, std
 
 
-def z_score_normalizer_apply(features, z_score_params, columns = None):
+def z_score_normalizer_apply(features, normalizer_params, columns = None):
     """
     Usage  : Use this function to transform your features to normalized ones such as normalize data has a mean of zero and a standard devaiation of one.
 
     Inputs :
-        features      : Features to be normalized. This is all your features (including train and test), or you can use this function twice. Once with training data as this parameter. Once with test data as this parameter.
-        z_score_params: The paramters of z score normalizer. You can obtain these parameters by using z_score_normalizer_train function.
-        columns       : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
+        features         : Features to be normalized. This is all your features (including train and test), or you can use this function twice. Once with training data as this parameter. Once with test data as this parameter.
+        normalizer_params: The paramters of z score normalizer. You can obtain these parameters by using z_score_normalizer_train function.
+        columns          : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
     
     Returns: 
         - a numpy array, where:
             1. The columns marked to be normalized are normalized.
             2. The columns not marked to be normalized are untouched.
     """
-    mean, std = z_score_params
+    mean, std = normalizer_params
 
     #checking if the shape of features are correct
     if len(features.shape) != 2:
