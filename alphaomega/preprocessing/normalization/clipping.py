@@ -1,15 +1,11 @@
+from typing import Union
 import numpy as np
 
 class ClippingNormalizer:
     """
     You can use ClippingNormalizer to normalize your data such as it does not be more or less than some certain percentile.
     """
-    def __init__(self):
-         """
-        Usage  : The constructor of ClippingNormalizer class. 
-        Inputs : Nothing
-        Returns: An Instantiation of the class.
-        """
+    def __init__(self) -> None:
          self.__maximum = np.array([])
          self.__minimum = np.array([])
          self.__columns = []
@@ -18,7 +14,7 @@ class ClippingNormalizer:
          self.__min_percentile = 10
          self.__columns = []
 
-    def config(self, **kwargs):
+    def config(self, **kwargs: dict) -> None:
         """
         Usage: use this method to configure the parameters of ClippingNormalizer instantiation.
 
@@ -48,7 +44,7 @@ class ClippingNormalizer:
             self.__min_percentile = 10
             self.__max_percentile = 90
 
-    def get(self, attribute):
+    def get(self, attribute: str) -> np.ndarray:
         """
         Usage: Use this method to get the attribute of interest.
 
@@ -65,42 +61,42 @@ class ClippingNormalizer:
 
         print("The specified attribute is not valid. Acceptable attributes are 'maximum', and 'minimum'")
 
-    def train(self, train_features):
+    def train(self, train_data: np.ndarray) -> None:
         """
         Usage  : Use this method to train the parameters of MinMaxNormalizer model. The trained parameteres are:
             maximum: a numpy array which contains the mean of the train features for each column.
             minimum : a numpy array which contains the standard deviation of the train features for each column.
 
         Inputs :
-            train_features: The feature matrix used to train the model.
+            train_data: The feature matrix used to train the model.
 
         Returns: Nothing
         """      
-        #checking for the correct shape of train_features
-        if len(train_features.shape) != 2:
+        #checking for the correct shape of train_data
+        if len(train_data.shape) != 2:
             print("Only tabular data is acceptable.")
             return
         
         #storing the number of featurs for the apply function
-        self.__shape = train_features.shape[1]
+        self.__shape = train_data.shape[1]
         
         #checking for the requested columns to be normalized. If None, all features will normalize.
         if self.__columns:
-            data_process = train_features[:,self.__columns].copy()
+            data_process = train_data[:,self.__columns].copy()
         else:
-            data_process = train_features.copy()
-            self.__columns = list(range(train_features.shape[1]))
+            data_process = train_data.copy()
+            self.__columns = list(range(train_data.shape[1]))
             
         #calculation minimum and maximum of each feature.
         self.__maximum = np.percentile(data_process, self.__max_percentile, axis = 0)
         self.__minimum = np.percentile(data_process, self.__min_percentile, axis = 0 )
         
-    def apply(self, features):
+    def apply(self, data: np.ndarray) -> None:
         """
-        Usage  : Use this method to transform your features to normalized ones.
+        Usage  : Use this method to transform your data to normalized ones.
 
         Inputs :
-            features: Features to be normalized.
+            data: Data to be normalized.
             
         Returns: 
             - a numpy array, where:
@@ -108,21 +104,21 @@ class ClippingNormalizer:
                 2. The columns not marked to be normalized are untouched.
         """
         #checking for the correct shape of the featuers.
-        if len(features.shape) != 2:
+        if len(data.shape) != 2:
             print("Only tabular data is acceptable.")
             return
         
-        #checking if the number of features is exactly the same as the number of train_features.
-        if self.__shape != features.shape[1]:
-            print("Number of features (dimensions) should be the same as the training data.")
+        #checking if the number of data is exactly the same as the number of train_data.
+        if self.__shape != data.shape[1]:
+            print("Number of data features (dimensions) should be the same as the training data features.")
             return
         
-        data_process = features.copy()
+        data_process = data.copy()
         
-        for column in range(features.shape[1]):
+        for column in range(data.shape[1]):
             if column not in self.__columns:
                 continue
-            for row in range(features.shape[0]):
+            for row in range(data.shape[0]):
                 if data_process[row ,column] > self.__maximum[self.__columns.index(column)]:
                     data_process[row, column] = self.__maximum[self.__columns.index(column)]
                 elif data_process[row, column] < self.__minimum[self.__columns.index(column)]:
@@ -131,12 +127,12 @@ class ClippingNormalizer:
         return data_process
 
 
-def clipping_normalizer_train(train_features, min_percentile = 10, max_percentile = 90):
+def clipping_normalizer_train(train_data: np.ndarray, min_percentile: int = 10, max_percentile: int = 90) -> tuple[np.ndarray, np.ndarray]:
     """
     Usage: Use this function to obtain the clipping_normalizer parameters.
 
     Inputs:
-        train_features: The feature matrix used to extract the statistics.
+        train_data: The feature matrix used to extract the statistics.
         max_percentile: maximum percentile to keep. values greater than max_percentile will be clipped to this value.
         min_percentile: minimum percentile to keep. values less than min_percentile will be clipped to this value.
 
@@ -149,25 +145,25 @@ def clipping_normalizer_train(train_features, min_percentile = 10, max_percentil
         return
 
     #checking if the shape of features are correct
-    if (len(train_features.shape) != 2):
+    if (len(train_data.shape) != 2):
         print("Only tabular data is acceptable (e.g. w dimensional).")
         return
 
     #calculation minimum and maximum of each feature.
-    maximum = np.percentile(train_features, max_percentile, axis = 0)
-    minimum = np.percentile(train_features, min_percentile, axis = 0 )
+    maximum = np.percentile(train_data, max_percentile, axis = 0)
+    minimum = np.percentile(train_data, min_percentile, axis = 0 )
 
     return maximum, minimum
 
 
-def clipping_normalizer_apply(features, normalizer_params, columns = None):
+def clipping_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None):
     """
-    Usage  : Use this function to transform your features to normalized ones such as it does not be more or less than some certain percentile.
+    Usage  : Use this function to transform your data to normalized ones such as it does not be more or less than some certain percentile.
 
     Inputs :
-        features         : Features to be normalized. This is all your features (including train and test), or you can use this function twice. Once with traini
+        data             : data to be normalized. This is all your data (including train and test), or you can use this function twice (train and test data seperately).
         normalizer_params: The parameters of clipping_normalizer. You can obtain these parameters by using clipping_normalizer_train function.
-        columns          : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
+        columns          : an array which determines which featuers should be normalized. If it is None, it means to normalize all the data.
 
     Returns:
         - a numpy array, where:
@@ -176,25 +172,25 @@ def clipping_normalizer_apply(features, normalizer_params, columns = None):
     """
     maximum, minimum = normalizer_params
 
-    #checking if the shape of features are correct
-    if (len(features.shape) != 2):
-        print("Only tabular data is acceptable (e.g. w dimensional).")
+    #checking if the shape of data are correct
+    if (len(data.shape) != 2):
+        print("Only tabular data is acceptable (e.g. 2 dimensional).")
         return
     
-    #checking if number of features in training data and data to be normalized are equal.
-    if (len(maximum.shape) != features.shape[1]):
-        print("Number of features to be normalized should be equal to the number of training features.")
+    #checking if number of data in training data and data to be normalized are equal.
+    if (len(maximum.shape) != data.shape[1]):
+        print("Number of data features (dimensions) to be normalized should be equal to the number of training data features.")
         return
     
-    scaled_features = features.copy()
+    scaled_data = data.copy()
         
-    for column in range(features.shape[1]):
+    for column in range(data.shape[1]):
         if column not in columns:
             continue
-        for row in range(features.shape[0]):
-            if scaled_features[row ,column] > maximum[columns.index(column)]:
-                scaled_features[row, column] = maximum[columns.index(column)]
-            elif scaled_features[row, column] < minimum[columns.index(column)]:
-                scaled_features[row, column] = minimum[columns.index(column)]
+        for row in range(data.shape[0]):
+            if scaled_data[row ,column] > maximum[columns.index(column)]:
+                scaled_data[row, column] = maximum[columns.index(column)]
+            elif scaled_data[row, column] < minimum[columns.index(column)]:
+                scaled_data[row, column] = minimum[columns.index(column)]
 
-    return scaled_features
+    return scaled_data
