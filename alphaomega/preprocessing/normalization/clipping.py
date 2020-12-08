@@ -91,7 +91,7 @@ class ClippingNormalizer:
         self.__maximum = np.percentile(data_process, self.__max_percentile, axis = 0)
         self.__minimum = np.percentile(data_process, self.__min_percentile, axis = 0 )
         
-    def apply(self, data: np.ndarray) -> None:
+    def apply(self, data: np.ndarray) -> Union[np.ndarray, None]:
         """
         Usage  : Use this method to transform your data to normalized ones.
 

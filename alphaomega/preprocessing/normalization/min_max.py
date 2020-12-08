@@ -1,21 +1,17 @@
+from typing import Union
 import numpy as np
 
 class MinMaxNormalizer:
     """
     You can use MinMaxNormalizer to normalize your data between 0 and 1.
     """
-    def __init__(self):
-         """
-        Usage  : The constructor of MinMaxNormalizer class. 
-        Inputs : Nothing
-        Returns: An Instantiation of the class.
-        """
+    def __init__(self) -> None:
          self.__minimum = np.array([])
          self.__maximum = np.array([])
          self.__columns = None
          self.__shape = 0
 
-    def config(self, **kwargs):
+    def config(self, **kwargs: dict) -> None:
         """
         Usage: use this method to configure the parameters of the MinMaxNormalizer instantiation.
 
@@ -28,7 +24,7 @@ class MinMaxNormalizer:
             if key == "columns":
                 self.__columns = value
 
-    def get(self, attribute):
+    def get(self, attribute: str) -> np.ndarray:
         """
         Usage: Use this method to get the attribute of interest.
 
@@ -45,41 +41,41 @@ class MinMaxNormalizer:
 
         print("The specified attribute is not valid. Acceptable attributes are 'maximum', and 'minimum'")
     
-    def train(self, train_features):
+    def train(self, train_data: np.ndarray) -> None:
         """
         Usage  : Use this method to train the parameters of MinMaxNormalizer model. The trained parameteres are:
             minimum: a numpy array which contains the maximum of the train features for each column.
             maximum: a numpy array which contains the minimum of the train features for each column.
 
         Inputs :
-            train_features: The feature matrix used to train the model.
+            train_data: The feature matrix used to train the model.
 
         Returns: Nothing
         """
-        #checking for the correct shape of train_features
-        if len(train_features.shape) != 2:
+        #checking for the correct shape of train_data
+        if len(train_data.shape) != 2:
             print("Only tabular data is acceptable.")
             return
         
         #storing the number of featurs for the apply function
-        self.__shape = train_features.shape[1]
+        self.__shape = train_data.shape[1]
         
         #checking for the requested columns to be normalized. If None, all features will normalize.
         if self.__columns:
-            data_process = train_features[:,self.__columns].copy()
+            data_process = train_data[:,self.__columns].copy()
         else:
-            data_process = train_features.copy()
+            data_process = train_data.copy()
             
         #calculation minimum and maximum of each feature.
         self.__maximum = np.max(data_process,axis = 0)
         self.__minimum = np.min(data_process, axis = 0)
         
-    def apply(self, features):
+    def apply(self, data: np.ndarray) -> Union[np.ndarray, None]:
         """
-        Usage  : Use this method to transform your features to normalized ones.
+        Usage  : Use this method to transform your data to normalized ones.
 
         Inputs :
-            features: Features to be normalized.
+            data: data to be normalized.
             
         Returns: 
             - a numpy array, where:
@@ -87,16 +83,16 @@ class MinMaxNormalizer:
                 2. The columns not marked to be normalized are untouched.
         """
         #checking for the correct shape of the featuers.
-        if len(features.shape) != 2:
+        if len(data.shape) != 2:
             print("Only tabular data is acceptable.")
             return
         
-        #checking if the number of features is exactly the same as the number of train_features.
-        if self.__shape != features.shape[1]:
-            print("Number of features (dimensions) should be the same as the training data.")
+        #checking if the number of data is exactly the same as the number of train_data.
+        if self.__shape != data.shape[1]:
+            print("Number of data features (dimensions) should be the same as the training data features.")
             return
         
-        data_process = features.copy()
+        data_process = data.copy()
         
         #checking if all columns should be normalized. If self.__columns is None, all columns will be normalized.
         if not self.__columns:
@@ -107,36 +103,36 @@ class MinMaxNormalizer:
         return data_process
 
 
-def min_max_normalizer_train(train_features):
+def min_max_normalizer_train(train_data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """
     Usage: Use this functin to obtain the parameters of min_max_normalizer.
 
     Inputs:
-        train_features: The features to get the statistics from. It's equivalent to training data.
+        train_data: The features to get the statistics from. It's equivalent to training data.
 
     Returns:
         - The parameters of min_max_normalizer. The output of this function is one of the inputs of min_max_normalizer_apply function.
     """
     #checking if the shape of features is correct
-    if (len(train_features.shape) != 2):
+    if (len(train_data.shape) != 2):
         print("Only tabular data is acceptable (e.g. 2 dimensional).")
         return
 
     #calculation minimum and maximum of each feature.
-    maximum = np.max(train_features,axis = 0)
-    minimum = np.min(train_features, axis = 0)
+    maximum = np.max(train_data,axis = 0)
+    minimum = np.min(train_data, axis = 0)
 
     return maximum, minimum
 
 
-def min_max_normalizer_apply(features, normalizer_params, columns = None):
+def min_max_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None) -> np.ndarray:
     """
-    Usage  : Use this function to transform your features to normalized ones between 0 and 1.
+    Usage  : Use this function to transform your data to normalized ones between 0 and 1.
 
     Inputs :
-        features         : Features to be normalized. This is all your features (including train and test), or you can use this function twice. Once with training data as this parameter. Once with test data as this parameter.
+        data             : data to be normalized. This is all your data (including train and test), or you can use this function twice. Once with training data as this parameter. Once with test data as this parameter.
         normalizer_params: The parameters of min_max_normalizer. You can obtain these parameters by using min_max_normalizer_train function.
-        columns          : an array which determines which featuers should be normalized. If it is None, it means to normalize all the features.
+        columns          : an array which determines which featuers should be normalized. If it is None, it means to normalize all the data.
     
     Returns: 
         - a numpy array, where:
@@ -145,21 +141,21 @@ def min_max_normalizer_apply(features, normalizer_params, columns = None):
     """
     maximum, minimum = normalizer_params
 
-    #checking if the shape of features is correct
-    if (len(features.shape) != 2 ):
+    #checking if the shape of data is correct
+    if (len(data.shape) != 2 ):
         print("Only tabular data is acceptable (e.g. 2 dimensional).")
         return
     
-    #checking if number of features in training data and data to be normalized are equal.
-    if (len(mean.shape) != features.shape[1]):
-        print("Number of features to be normalized should be equal to the number of training features.")
+    #checking if number of data in training data and data to be normalized are equal.
+    if (len(mean.shape) != data.shape[1]):
+        print("Number of data features (dimensions) to be normalized should be equal to the number of training data features.")
         return
         
     #checking if all columns should be normalized. If columns is None, all columns will be normalized.
     if not columns:
-        return (features - minimum) / (maximum - minimum)
+        return (data - minimum) / (maximum - minimum)
 
-    scaled_features = features.copy()
+    scaled_data = data.copy()
     #if only some columns should get normalized, we do it with the next command.
-    scaled_features[: ,columns] = (features[: ,columns] - minimum) / (maximum - minimum)
-    return scaled_features
+    scaled_data[: ,columns] = (data[: ,columns] - minimum) / (maximum - minimum)
+    return scaled_data
