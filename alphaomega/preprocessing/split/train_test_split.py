@@ -1,3 +1,4 @@
+from typing import Union
 import numpy as np
 
 class TrainTestSplit:
@@ -5,11 +6,6 @@ class TrainTestSplit:
     You can use TrainTestSplit class to split your data to training and testing sets (and if required, calidation set).
     """
     def __init__(self):
-        """
-        Usage  : Constructor of the TrainTestSplit class.
-        Inputs : Nothing.
-        Returns: An instantiation of the TrainTestSplit class.
-        """
         self.__test_idx = np.array([])
         self.__validation_idx = np.array([])
         self.__train_idx = np.array([])
@@ -18,7 +14,7 @@ class TrainTestSplit:
         self.__validation_rate = 0.2
         self.__random_state = None
 
-    def cofig(self, **kwargs):
+    def cofig(self, **kwargs: dict) -> None:
         """
         Usage: Use this method to configure the TrainTestSplit instantiation.
 
@@ -53,7 +49,7 @@ class TrainTestSplit:
             self.__test_rate = 0.3
             self.__validation_rate = 0.2
 
-    def get(self, attribute):
+    def get(self, attribute: str) -> Union[np.ndarray, None]:
         """
         Usage: Use this method to get the attribute of interest.
 
@@ -73,7 +69,7 @@ class TrainTestSplit:
 
         print("The specified attribute is not valid. Acceptable attributes are 'train_idx', 'test_idx', and 'validation_idx'")
 
-    def train(self, count):
+    def train(self, count: int) -> None:
         """
         Usage : You can use this method to randomly split the data between train, test(, and validation) sets. Trained parameteres are:
             test_idx       : the index of the data which belongs to the test set.
@@ -82,7 +78,6 @@ class TrainTestSplit:
 
         Inputs:
             count : The number of data points in your dataset.
-            labels: The labels of the original dataset.
 
         Returns: Nothing.
         """
@@ -97,7 +92,7 @@ class TrainTestSplit:
 
         np.random.seed(None)
 
-    def apply(self, featuers, part = "train"):
+    def apply(self, data: np.ndarray, part: str = "train") -> Union[np.ndarray, None]:
         """
         Usage: Use this method to extract the desired part of the dataset.
 
@@ -108,10 +103,10 @@ class TrainTestSplit:
         Returns:
             - a numpy array which is extracted from the features.
         """
-        if len(featuers.shape) == 1 or featuers.shape[0] == 1:
-            data_process = featuers.reshape(-1, 1).copy()
+        if len(data.shape) == 1 or data.shape[0] == 1:
+            data_process = data.reshape(-1, 1).copy()
         else:
-            data_process = featuers.copy()
+            data_process = data.copy()
         if part == "train":
             return data_process[self.__train_idx]
         if part == "test":
@@ -122,7 +117,7 @@ class TrainTestSplit:
         print("Please specify the part parameter correctly. It could be only 'train', 'test' or if validation is enabled 'validation'.")
 
 
-def train_test_split(count, test_rate = 0.3, validation = False, validation_rate = 0.2, random_state = None):
+def train_test_split(count: int, test_rate: float = 0.3, validation: bool = False, validation_rate: float = 0.2, random_state: Union[int, None] = None) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Usage: Use this function to split your data into train and test (and if needed validation) sets.
 
