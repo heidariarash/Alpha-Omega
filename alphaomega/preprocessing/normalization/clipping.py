@@ -44,7 +44,7 @@ class ClippingNormalizer:
             self.__min_percentile = 10
             self.__max_percentile = 90
 
-    def get(self, attribute: str) -> np.ndarray:
+    def get(self, attribute: str) -> Union[np.ndarray, None]:
         """
         Usage: Use this method to get the attribute of interest.
 
@@ -127,7 +127,7 @@ class ClippingNormalizer:
         return data_process
 
 
-def clipping_normalizer_train(train_data: np.ndarray, min_percentile: int = 10, max_percentile: int = 90) -> tuple[np.ndarray, np.ndarray]:
+def clipping_normalizer_train(train_data: np.ndarray, min_percentile: int = 10, max_percentile: int = 90) -> Union[tuple[np.ndarray, np.ndarray], None]:
     """
     Usage: Use this function to obtain the clipping_normalizer parameters.
 
@@ -156,7 +156,7 @@ def clipping_normalizer_train(train_data: np.ndarray, min_percentile: int = 10, 
     return maximum, minimum
 
 
-def clipping_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None):
+def clipping_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None) -> Union[np.ndarray, None]:
     """
     Usage  : Use this function to transform your data to normalized ones such as it does not be more or less than some certain percentile.
 

@@ -24,7 +24,7 @@ class MinMaxNormalizer:
             if key == "columns":
                 self.__columns = value
 
-    def get(self, attribute: str) -> np.ndarray:
+    def get(self, attribute: str) -> Union[np.ndarray, None]:
         """
         Usage: Use this method to get the attribute of interest.
 
@@ -103,7 +103,7 @@ class MinMaxNormalizer:
         return data_process
 
 
-def min_max_normalizer_train(train_data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+def min_max_normalizer_train(train_data: np.ndarray) -> Union[tuple[np.ndarray, np.ndarray], None]:
     """
     Usage: Use this functin to obtain the parameters of min_max_normalizer.
 
@@ -125,7 +125,7 @@ def min_max_normalizer_train(train_data: np.ndarray) -> tuple[np.ndarray, np.nda
     return maximum, minimum
 
 
-def min_max_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None) -> np.ndarray:
+def min_max_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None) -> Union[np.ndarray, None]:
     """
     Usage  : Use this function to transform your data to normalized ones between 0 and 1.
 
