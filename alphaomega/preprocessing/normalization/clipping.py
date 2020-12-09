@@ -1,5 +1,6 @@
 from typing import Union
 import numpy as np
+from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
 
 class ClippingNormalizer:
     """
@@ -44,7 +45,7 @@ class ClippingNormalizer:
             self.__min_percentile = 10
             self.__max_percentile = 90
 
-    def get(self, attribute: str) -> Union[np.ndarray, None]:
+    def get(self, attribute: str) -> np.ndarray:
         """
         Usage: Use this method to get the attribute of interest.
 
@@ -59,7 +60,7 @@ class ClippingNormalizer:
         if attribute == "minimum":
             return self.__minimum
 
-        print("The specified attribute is not valid. Acceptable attributes are 'maximum', and 'minimum'")
+        raise WrongAttribute("The specified attribute is not valid. Acceptable attributes are 'maximum', and 'minimum'")
 
     def train(self, train_data: np.ndarray) -> None:
         """
@@ -74,8 +75,7 @@ class ClippingNormalizer:
         """      
         #checking for the correct shape of train_data
         if len(train_data.shape) != 2:
-            print("Only tabular data is acceptable.")
-            return
+            raise WrongDimension("Only tabular data is acceptable.")
         
         #storing the number of featurs for the apply function
         self.__shape = train_data.shape[1]
@@ -91,7 +91,7 @@ class ClippingNormalizer:
         self.__maximum = np.percentile(data_process, self.__max_percentile, axis = 0)
         self.__minimum = np.percentile(data_process, self.__min_percentile, axis = 0 )
         
-    def apply(self, data: np.ndarray) -> Union[np.ndarray, None]:
+    def apply(self, data: np.ndarray) -> np.ndarray:
         """
         Usage  : Use this method to transform your data to normalized ones.
 
@@ -105,13 +105,11 @@ class ClippingNormalizer:
         """
         #checking for the correct shape of the featuers.
         if len(data.shape) != 2:
-            print("Only tabular data is acceptable.")
-            return
+            raise WrongDimension("Only tabular data is acceptable.")
         
         #checking if the number of data is exactly the same as the number of train_data.
         if self.__shape != data.shape[1]:
-            print("Number of data features (dimensions) should be the same as the training data features.")
-            return
+            raise WrongDimension("Number of data features (dimensions) should be the same as the training data features."
         
         data_process = data.copy()
         
@@ -127,7 +125,7 @@ class ClippingNormalizer:
         return data_process
 
 
-def clipping_normalizer_train(train_data: np.ndarray, min_percentile: int = 10, max_percentile: int = 90) -> Union[tuple[np.ndarray, np.ndarray], None]:
+def clipping_normalizer_train(train_data: np.ndarray, min_percentile: int = 10, max_percentile: int = 90) -> tuple[np.ndarray, np.ndarray]:
     """
     Usage: Use this function to obtain the clipping_normalizer parameters.
 
@@ -141,13 +139,11 @@ def clipping_normalizer_train(train_data: np.ndarray, min_percentile: int = 10, 
     """
     #checking if the range of min and max percentile is correct.
     if (max_percentile > 100 or min_percentile < 0 or max_percentile <= min_percentile):
-        print("min_percentile should be less than max_percentile and both need to be between 0 and 100")
-        return
+        raise WrongAttribute("min_percentile should be less than max_percentile and both need to be between 0 and 100")
 
     #checking if the shape of features are correct
     if (len(train_data.shape) != 2):
-        print("Only tabular data is acceptable (e.g. w dimensional).")
-        return
+        raise WrongDimension("Only tabular data is acceptable (e.g. w dimensional).")
 
     #calculation minimum and maximum of each feature.
     maximum = np.percentile(train_data, max_percentile, axis = 0)
@@ -156,7 +152,7 @@ def clipping_normalizer_train(train_data: np.ndarray, min_percentile: int = 10, 
     return maximum, minimum
 
 
-def clipping_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None) -> Union[np.ndarray, None]:
+def clipping_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None) -> np.ndarray:
     """
     Usage  : Use this function to transform your data to normalized ones such as it does not be more or less than some certain percentile.
 
@@ -174,13 +170,11 @@ def clipping_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndar
 
     #checking if the shape of data are correct
     if (len(data.shape) != 2):
-        print("Only tabular data is acceptable (e.g. 2 dimensional).")
-        return
+        raise WrongDimension("Only tabular data is acceptable (i.e. 2 dimensional).")
     
     #checking if number of data in training data and data to be normalized are equal.
     if (len(maximum.shape) != data.shape[1]):
-        print("Number of data features (dimensions) to be normalized should be equal to the number of training data features.")
-        return
+        raise WrongDimension("Number of data features (dimensions) to be normalized should be equal to the number of training data features.")
     
     scaled_data = data.copy()
         
