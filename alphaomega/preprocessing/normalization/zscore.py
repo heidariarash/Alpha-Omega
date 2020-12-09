@@ -1,5 +1,6 @@
 from typing import Union
 import numpy as np
+from alphaomega.utils.exceptions import WrongDimension, WrongAttribute
 
 class ZScoreNormalizer:
     """
@@ -24,7 +25,7 @@ class ZScoreNormalizer:
             if key == "columns":
                 self.__columns = value
 
-    def get(self, attribute: str) -> Union[np.ndarray, None]:
+    def get(self, attribute: str) -> np.ndarray:
         """
         Usage: Use this method to get the attribute of interest.
 
@@ -39,7 +40,7 @@ class ZScoreNormalizer:
         if attribute == "std":
             return self.__std
 
-        print("The specified attribute is not valid. Acceptable attributes are 'mean', and 'std'")
+        raise WrongAttribute("The specified attribute is not valid. Acceptable attributes are 'mean', and 'std'")
         
     def train(self, train_data: np.ndarray) -> None:
         """
@@ -55,8 +56,7 @@ class ZScoreNormalizer:
         """
         #checking for the correct shape of train_data
         if len(train_data.shape) != 2:
-            print("Only tabular data is acceptable.")
-            return
+            raise WrongDimension("Only tabular data is acceptable.")
         
         #storing the number of featurs for the apply function
         self.__shape = train_data.shape[1]
@@ -71,7 +71,7 @@ class ZScoreNormalizer:
         self.__mean = np.mean(data_process,axis = 0)
         self.__std = np.std(data_process, axis = 0)
         
-    def apply(self, data: np.ndarray) -> Union[np.ndarray, None]:
+    def apply(self, data: np.ndarray) -> np.ndarray:
         """
         Usage  : Use this method to transform your data to normalized ones.
 
@@ -85,13 +85,11 @@ class ZScoreNormalizer:
         """
         #checking for the correct shape of the featuers.
         if len(data.shape) != 2:
-            print("Only tabular data is acceptable.")
-            return
+            raise WrongDimension("Only tabular data is acceptable.")
         
         #checking if the number of data is exactly the same as the number of train_data.
         if self.__shape != data.shape[1]:
-            print("Number of data features (dimensions) should be the same as the training data features.")
-            return
+            raise WrongDimension("Number of data features (dimensions) should be the same as the training data features.")
         
         data_process = data.copy()
         
@@ -105,7 +103,7 @@ class ZScoreNormalizer:
 
         
 
-def z_score_normalizer_train(train_data: np.ndarray) -> Union[tuple[np.ndarray, np.ndarray], None]:
+def z_score_normalizer_train(train_data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """
     Usage: Use this function to obtain the parameters of z_score_normalizer.
 
@@ -117,8 +115,7 @@ def z_score_normalizer_train(train_data: np.ndarray) -> Union[tuple[np.ndarray, 
     """
     #checking if the shape of features are correct
     if len(train_data.shape) != 2:
-        print("Only tabular data is acceptable (e.g. 2 dimensional).")
-        return
+        raise WrongDimension("Only tabular data is acceptable (i.e. 2 dimensional).")
 
     #calculation minimum and maximum of each feature.
     mean = np.mean(train_data,axis = 0)
@@ -127,7 +124,7 @@ def z_score_normalizer_train(train_data: np.ndarray) -> Union[tuple[np.ndarray, 
     return mean, std
 
 
-def z_score_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None) -> Union[np.ndarray, None]:
+def z_score_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None) -> np.ndarray:
     """
     Usage  : Use this function to transform your data to normalized ones such as normalize data has a mean of zero and a standard devaiation of one.
 
@@ -145,13 +142,11 @@ def z_score_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarr
 
     #checking if the shape of data are correct
     if len(data.shape) != 2:
-        print("Only tabular data is acceptable (e.g. 2 dimensional).")
-        return
+        raise WrongDimension("Only tabular data is acceptable (i.e. 2 dimensional).")
     
     #checking if number of data in training data and data to be normalized are equal.
     if (len(mean.shape) != data.shape[1]):
-        print("Number of data features (dimenstions) to be normalized should be equal to the number of training data features.")
-        return
+        raise WrongDimension("Number of data features (dimenstions) to be normalized should be equal to the number of training data features.")
         
     #checking if all columns should be normalized. If columns is None, all columns will be normalized.
     if not columns:
