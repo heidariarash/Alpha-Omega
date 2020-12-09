@@ -1,5 +1,6 @@
 from typing import Union
 import numpy as np
+from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
 
 class TrainTestSplit:
     """
@@ -49,7 +50,7 @@ class TrainTestSplit:
             self.__test_rate = 0.3
             self.__validation_rate = 0.2
 
-    def get(self, attribute: str) -> Union[np.ndarray, None]:
+    def get(self, attribute: str) -> np.ndarray:
         """
         Usage: Use this method to get the attribute of interest.
 
@@ -67,7 +68,7 @@ class TrainTestSplit:
         if attribute == "validation_idx":
             return self.__validation_idx
 
-        print("The specified attribute is not valid. Acceptable attributes are 'train_idx', 'test_idx', and 'validation_idx'")
+        raise WrongAttribute("The specified attribute is not valid. Acceptable attributes are 'train_idx', 'test_idx', and 'validation_idx'")
 
     def train(self, count: int) -> None:
         """
@@ -92,7 +93,7 @@ class TrainTestSplit:
 
         np.random.seed(None)
 
-    def apply(self, data: np.ndarray, part: str = "train") -> Union[np.ndarray, None]:
+    def apply(self, data: np.ndarray, part: str = "train") -> np.ndarray:
         """
         Usage: Use this method to extract the desired part of the dataset.
 
@@ -114,7 +115,7 @@ class TrainTestSplit:
         if part == "validation" and self.__validation_rate:
             return data_process[self.__validation_idx]
 
-        print("Please specify the part parameter correctly. It could be only 'train', 'test' or if validation is enabled 'validation'.")
+        raise WrongAttribute("Please specify the part parameter correctly. It could be only 'train', 'test' or if validation is enabled 'validation'.")
 
 
 def train_test_split(count: int, test_rate: float = 0.3, validation: bool = False, validation_rate: float = 0.2, random_state: Union[int, None] = None) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
