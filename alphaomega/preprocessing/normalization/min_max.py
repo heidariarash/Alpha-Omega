@@ -1,5 +1,6 @@
 from typing import Union
 import numpy as np
+from alphaomega.utils.exceptions import WrongDimension, WrongAttribute
 
 class MinMaxNormalizer:
     """
@@ -24,7 +25,7 @@ class MinMaxNormalizer:
             if key == "columns":
                 self.__columns = value
 
-    def get(self, attribute: str) -> Union[np.ndarray, None]:
+    def get(self, attribute: str) -> np.ndarray:
         """
         Usage: Use this method to get the attribute of interest.
 
@@ -39,7 +40,7 @@ class MinMaxNormalizer:
         if attribute == "minimum":
             return self.__minimum
 
-        print("The specified attribute is not valid. Acceptable attributes are 'maximum', and 'minimum'")
+        raise WrongAttribute("The specified attribute is not valid. Acceptable attributes are 'maximum', and 'minimum'")
     
     def train(self, train_data: np.ndarray) -> None:
         """
@@ -54,8 +55,7 @@ class MinMaxNormalizer:
         """
         #checking for the correct shape of train_data
         if len(train_data.shape) != 2:
-            print("Only tabular data is acceptable.")
-            return
+            raise WrongDimension("Only tabular data is acceptable.")
         
         #storing the number of featurs for the apply function
         self.__shape = train_data.shape[1]
@@ -70,7 +70,7 @@ class MinMaxNormalizer:
         self.__maximum = np.max(data_process,axis = 0)
         self.__minimum = np.min(data_process, axis = 0)
         
-    def apply(self, data: np.ndarray) -> Union[np.ndarray, None]:
+    def apply(self, data: np.ndarray) -> np.ndarray:
         """
         Usage  : Use this method to transform your data to normalized ones.
 
@@ -84,13 +84,11 @@ class MinMaxNormalizer:
         """
         #checking for the correct shape of the featuers.
         if len(data.shape) != 2:
-            print("Only tabular data is acceptable.")
-            return
+            raise WrongDimension("Only tabular data is acceptable.")
         
         #checking if the number of data is exactly the same as the number of train_data.
         if self.__shape != data.shape[1]:
-            print("Number of data features (dimensions) should be the same as the training data features.")
-            return
+            raise WrongDimension("Number of data features (dimensions) should be the same as the training data features.")
         
         data_process = data.copy()
         
@@ -103,7 +101,7 @@ class MinMaxNormalizer:
         return data_process
 
 
-def min_max_normalizer_train(train_data: np.ndarray) -> Union[tuple[np.ndarray, np.ndarray], None]:
+def min_max_normalizer_train(train_data: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """
     Usage: Use this functin to obtain the parameters of min_max_normalizer.
 
@@ -115,7 +113,7 @@ def min_max_normalizer_train(train_data: np.ndarray) -> Union[tuple[np.ndarray, 
     """
     #checking if the shape of features is correct
     if (len(train_data.shape) != 2):
-        print("Only tabular data is acceptable (e.g. 2 dimensional).")
+        raise WrongDimension("Only tabular data is acceptable (i.e. 2 dimensional).")
         return
 
     #calculation minimum and maximum of each feature.
@@ -125,7 +123,7 @@ def min_max_normalizer_train(train_data: np.ndarray) -> Union[tuple[np.ndarray, 
     return maximum, minimum
 
 
-def min_max_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None) -> Union[np.ndarray, None]:
+def min_max_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarray, np.ndarray], columns: Union[List, None] = None) -> np.ndarray:
     """
     Usage  : Use this function to transform your data to normalized ones between 0 and 1.
 
@@ -143,13 +141,11 @@ def min_max_normalizer_apply(data: np.ndarray, normalizer_params: tuple[np.ndarr
 
     #checking if the shape of data is correct
     if (len(data.shape) != 2 ):
-        print("Only tabular data is acceptable (e.g. 2 dimensional).")
-        return
+        raise WrongDimension("Only tabular data is acceptable (i.e. 2 dimensional).")
     
     #checking if number of data in training data and data to be normalized are equal.
     if (len(mean.shape) != data.shape[1]):
-        print("Number of data features (dimensions) to be normalized should be equal to the number of training data features.")
-        return
+        raise WrongDimension("Number of data features (dimensions) to be normalized should be equal to the number of training data features.")
         
     #checking if all columns should be normalized. If columns is None, all columns will be normalized.
     if not columns:

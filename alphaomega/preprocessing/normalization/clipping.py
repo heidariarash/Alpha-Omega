@@ -143,7 +143,7 @@ def clipping_normalizer_train(train_data: np.ndarray, min_percentile: int = 10, 
 
     #checking if the shape of features are correct
     if (len(train_data.shape) != 2):
-        raise WrongDimension("Only tabular data is acceptable (e.g. w dimensional).")
+        raise WrongDimension("Only tabular data is acceptable (i.e. 2 dimensional).")
 
     #calculation minimum and maximum of each feature.
     maximum = np.percentile(train_data, max_percentile, axis = 0)
