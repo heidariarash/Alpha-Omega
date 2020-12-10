@@ -43,7 +43,7 @@ class KNN:
         self.__data   = train_data
         self.__labels = labels
 
-    def apply(self, data):
+    def apply(self, data: np.ndarray) -> np.ndarray:
         """
         Usage: Use this method to apply the KNN model to the new data for prediction.
 
@@ -72,7 +72,7 @@ class KNN:
 
         return labels
 
-    def test(self, test_data, test_labels):
+    def test(self, test_data: np.ndarray, test_labels: np.ndarray) -> float:
         """
         Usage: Use this method to find out the accuracy of KNN model.
 
@@ -88,7 +88,7 @@ class KNN:
         return accuracy
         
 
-def knn_apply(train_data, train_labels, test_data, k = 1):
+def knn_apply(train_data: np.ndarray, train_labels: np.ndarray, test_data: np.ndarray, k: int = 1) -> np.ndarray:
     """
     Usage: Use this function to apply KNN algorithm to your test set.
 
