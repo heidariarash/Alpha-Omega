@@ -1,5 +1,6 @@
 import numpy as np
 from collections import Counter
+from alphaomega.utils.exceptions import WrongAttribute
 
 class KNN:
     """
@@ -10,16 +11,11 @@ class KNN:
             2. In the k nearest neighbors of the new data, two or more labels have same quantitiy. In this case, the labels will be assigned randomly between dominant labels.
     """
     def __init__(self):
-        """
-        Usage  : The constructor of KNN class. 
-        Inputs : Nothing
-        Returns: An Instantiation of the class.
-        """
-        self.__k = 1
-        self.__features = np.array([])
+        self.__k      = 1
+        self.__data   = np.array([])
         self.__labels = np.array([])
     
-    def config(self, **kwargs):
+    def config(self, **kwargs: dict) -> None:
         """
         Usage  : Use this method to configure the parameteres of the KNN instantiation.
 
@@ -30,97 +26,102 @@ class KNN:
         """
         for key, value in kwargs.items():
             if key == "k":
-                self.__k = int(value)
                 if int(value) < 1:
-                    print("k cannot be less than 1. It reseted to 1.")
-                    self.__k = 1
+                    raise AttributeError("k cannot be less than 1")
+                self.__k = int(value)
 
-    def train(self, train_features, labels):
+    def train(self, train_data: np.ndarray, labels: np.ndarray) -> None:
         """
         Usage  : Use this method to train the KNN model.
 
         Inputs :
-            train_features: The features of the training set.
-            labels        : The labels of the training set.
+            train_data: The features of the training set.
+            labels    : The labels of the training set.
 
         Returns: Nothing.
         """
-        self.__features = train_features
+        self.__data   = train_data
         self.__labels = labels
 
-    def apply(self, features):
+    def apply(self, data):
         """
         Usage: Use this method to apply the KNN model to the new data for prediction.
 
         Inputs:
-            featurs: features of the test data.
+            featurs: data of the test data.
 
         Returns:
             - A numpy array including the labels for each data point in featurs.
         """
-        labels = np.zeros(features.shape[0], dtype=int)
-        distances = []
+        labels          = np.zeros(data.shape[0], dtype=int)
+        distances       = []
         neighbor_labels = []
-        # neighbor_distances = []
-        for data in range(features.shape[0]):
-            for neighbor in range(self.__features.shape[0]):
-                distances.append(np.linalg.norm(self.__features[neighbor] - features[data]))
+
+        for data in range(data.shape[0]):
+
+            for neighbor in range(self.__data.shape[0]):
+                distances.append(np.linalg.norm(self.__data[neighbor] - data[data]))
             for neighbor in range(self.__k):
                 neighbor_labels.append(self.__labels[np.argmin(distances)])
-                # neighbor_distances.append(distances[np.argmin(distances)])
                 distances[np.argmin(distances)] = np.Inf
 
-            most_label = max(neighbor_labels, key=neighbor_labels.count)
+            most_label   = max(neighbor_labels, key=neighbor_labels.count)
             labels[data] = most_label
             distances.clear()
-            # neighbor_distances.clear()
             neighbor_labels.clear()
+
         return labels
 
-    def test(self, test_features, test_labels):
+    def test(self, test_data, test_labels):
         """
         Usage: Use this method to find out the accuracy of KNN model.
 
         Inputs:
-            test_features: The features of the test set.
-            test_labels  : The labels of the test set.
+            test_data  : The features of the test set.
+            test_labels: The labels of the test set.
 
         Returns:
              - The accuracy of the model in percentage.
         """
-        predicted_labels = self.apply(test_features)
-        accuracy = 100 * (np.mean(predicted_labels == test_labels.reshape(-1)))
+        predicted_labels = self.apply(test_data)
+        accuracy         = 100 * (np.mean(predicted_labels == test_labels.reshape(-1)))
         return accuracy
         
 
-def knn_apply(train_features, train_labels, test_features, k = 1):
+def knn_apply(train_data, train_labels, test_data, k = 1):
     """
     Usage: Use this function to apply KNN algorithm to your test set.
 
     Inputs:
-        train_features: The features of the training set.
-        train_labels  : The labels of the training set.
-        test_features : The features of the test set.
-        k             : The number of nearest neighbors.
+        train_data  : The features of the training set.
+        train_labels: The labels of the training set.
+        test_data   : The features of the test set.
+        k           : The number of nearest neighbors.
 
     Returns: 
         - A numpy array including the labels for each data point in featurs.
     """
-    labels = np.zeros(test_features.shape[0], dtype=int)
-    distances = []
+    #checking for the value of k
+    if int(k) < 1:
+        raise AttributeError("k cannot be less than 1")
+
+    k = int(k)
+
+    labels          = np.zeros(test_data.shape[0], dtype=int)
+    distances       = []
     neighbor_labels = []
-    # neighbor_distances = []
-    for data in range(test_features.shape[0]):
-        for neighbor in range(train_features.shape[0]):
-            distances.append(np.linalg.norm(train_features[neighbor] - test_features[data]))
+
+    for data in range(test_data.shape[0]):
+
+        for neighbor in range(train_data.shape[0]):
+            distances.append(np.linalg.norm(train_data[neighbor] - test_data[data]))
         for neighbor in range(k):
             neighbor_labels.append(train_labels[np.argmin(distances)])
-            # neighbor_distances.append(distances[np.argmin(distances)])
             distances[np.argmin(distances)] = np.Inf
 
-        most_label = max(neighbor_labels, key=neighbor_labels.count)
+        most_label   = max(neighbor_labels, key=neighbor_labels.count)
         labels[data] = most_label
         distances.clear()
-        # neighbor_distances.clear()
         neighbor_labels.clear()
+
     return labels
