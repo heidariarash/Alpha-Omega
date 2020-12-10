@@ -27,7 +27,7 @@ class KNN:
         for key, value in kwargs.items():
             if key == "k":
                 if int(value) < 1:
-                    raise AttributeError("k cannot be less than 1")
+                    raise WrongAttribute("k cannot be less than 1")
                 self.__k = int(value)
 
     def train(self, train_data: np.ndarray, labels: np.ndarray) -> None:
@@ -103,7 +103,7 @@ def knn_apply(train_data: np.ndarray, train_labels: np.ndarray, test_data: np.nd
     """
     #checking for the value of k
     if int(k) < 1:
-        raise AttributeError("k cannot be less than 1")
+        raise WrongAttribute("k cannot be less than 1")
 
     k = int(k)
 

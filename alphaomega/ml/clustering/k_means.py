@@ -29,17 +29,17 @@ class KMeans:
 
             if key == "k":
                 if int(value) < 2:
-                    raise AttributeError("Value of k (number of clusters) can not be less than two.")
+                    raise WrongAttribute("Value of k (number of clusters) can not be less than two.")
                 self.__k = int(k)
 
             elif key == "iterations":
                 if int(value) < 1:
-                    raise AttributeError("Iterations could not be less than 1.")
+                    raise WrongAttribute("Iterations could not be less than 1.")
                 self.__iterations = int(value)
 
             elif key == "max_iter":
                 if int(value) < 1:
-                    raise AttributeError("max_iter could not be less than 1.")
+                    raise WrongAttribute("max_iter could not be less than 1.")
                 self.__max_iter = int(value)
 
     def get(self, attribute: str) -> Union[int, np.ndarray, list[int]]:
@@ -60,7 +60,7 @@ class KMeans:
         if attribute == "centroids":
             return self.__centroids
 
-        raise AttributeError("The specified attribute is not valid. Acceptable attributes are 'centroids', 'labels', and 'cost'")
+        raise WrongAttribute("The specified attribute is not valid. Acceptable attributes are 'centroids', 'labels', and 'cost'")
 
     def train(self, data: np.ndarray) -> None:
         """
@@ -144,7 +144,7 @@ class KMeans:
 
         #check the boundrary of max_k
         if max_k > data.shape[0] or max_k < min_k:
-            raise AttributeError("maximum number of clusters can not be more than the number of data points.\nmaximum number of clusters can not be less than minimum number of clusters.")
+            raise WrongAttribute("maximum number of clusters can not be more than the number of data points.\nmaximum number of clusters can not be less than minimum number of clusters.")
 
         #running the model for each K and compute the cost function and store it in an array.
         for k in range(min_k, max_k + 1):
