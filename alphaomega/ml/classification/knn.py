@@ -15,7 +15,7 @@ class KNN:
         self.__data   = np.array([])
         self.__labels = np.array([])
     
-    def config(self, **kwargs: dict) -> None:
+    def config(self, **kwargs) -> None:
         """
         Usage  : Use this method to configure the parameteres of the KNN instantiation.
 

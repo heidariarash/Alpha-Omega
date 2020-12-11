@@ -14,7 +14,7 @@ class BorderIntropolation:
         self.__right       = 1
         self.__border_type = "constant"
 
-    def config(self, **kwargs: dict) -> None:
+    def config(self, **kwargs) -> None:
         """
         Usage: Use this method to configure the parameteres of the BorderIntropolation instantiation.
 

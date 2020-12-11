@@ -12,7 +12,7 @@ class LinearRegression:
         self.__regularizator = None
         self.__penalizer     = 0.1
 
-    def config(self, **kwargs: dict) -> None:
+    def config(self, **kwargs) -> None:
         """
         Usage: use this method to configure the parameters of the LinearRegression instantiation.
 

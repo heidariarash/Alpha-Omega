@@ -14,7 +14,7 @@ class KMeans:
         self.__iterations = 10
         self.__max_iter   = 100
 
-    def config(self, **kwargs: dict) -> None:
+    def config(self, **kwargs) -> None:
         """
         Usage: Use this method to configure the parameters of the KMeans instantiation.
 

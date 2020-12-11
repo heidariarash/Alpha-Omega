@@ -15,7 +15,7 @@ class ClippingNormalizer:
          self.__min_percentile = 10
          self.__columns = []
 
-    def config(self, **kwargs: dict) -> None:
+    def config(self, **kwargs) -> None:
         """
         Usage: use this method to configure the parameters of ClippingNormalizer instantiation.
 

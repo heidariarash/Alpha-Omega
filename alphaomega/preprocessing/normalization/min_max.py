@@ -12,7 +12,7 @@ class MinMaxNormalizer:
          self.__columns = None
          self.__shape = 0
 
-    def config(self, **kwargs: dict) -> None:
+    def config(self, **kwargs) -> None:
         """
         Usage: use this method to configure the parameters of the MinMaxNormalizer instantiation.
 

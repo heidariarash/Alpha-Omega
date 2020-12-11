@@ -15,7 +15,7 @@ class TrainTestSplit:
         self.__validation_rate = 0.2
         self.__random_state = None
 
-    def cofig(self, **kwargs: dict) -> None:
+    def cofig(self, **kwargs) -> None:
         """
         Usage: Use this method to configure the TrainTestSplit instantiation.
 
