@@ -1,20 +1,17 @@
 import numpy as np
+from typing import Union
+from alphaomega.utils.exceptions import WrongDimension, WrongAttribute
 
 class ChannelSpliter:
     """
     Usage: Use this class to split the channels of your image into its constructing channels.
     """
     def __init__(self):
-        """
-        Usage  : The costructor of ChannelSplit class.
-        Inputs : Nothing.
-        Returns: An instantiation of ChannelSplit class.
-        """
-        self.__channels = list()
-        self.__image_type = ""
+        self.__channels           = list()
+        self.__image_type         = ""
         self.__channels_dimension = 2
 
-    def config(self, **kwargs):
+    def config(self, **kwargs) -> None:
         """
         Usage: Use this method to configure the parameters of the ChannelSplit instantiation.
 
@@ -25,17 +22,19 @@ class ChannelSpliter:
         Returns: Nothing.
         """
         for key , value in kwargs.items():
+
             if key == "image_type":
                 self.__image_type = value
+
             elif key == "channels_dimension":
                 if value == "first" or value == 0:
                     self.__channels_dimension = 0
                 elif value == "last" or value == 2:
                     self.__channels_dimension = 2
                 else:
-                    print("Wrong value for channels_dimension. It could be only 'first' or 'last' (0 and 2 are also possible).")
+                    raise WrongAttribute("Wrong value for channels_dimension. It could be only 'first' or 'last' (0 and 2 are also possible).")
 
-    def get(self, channel):
+    def get(self, channel: Union[str, int]) -> np.ndarray:
         """
         Usage: Use this method to obtain the channel of interest.
 
@@ -52,9 +51,9 @@ class ChannelSpliter:
         if (type(channel) == int):
             return self.__channels[channel]
 
-        print("The specified channel is incorrect.")
+        raise WrongAttribute("The specified channel is incorrect.")
 
-    def apply(self, image):
+    def apply(self, image: np.ndarray) -> list:
         """
         Usage: Use this method to apply the ChannelSplit method to you image. This method also assigns different channels to channels attribute.
 
@@ -81,9 +80,9 @@ class ChannelSpliter:
             return self.__channels
 
         #if image has more than three dimesions or is one dimensional
-        print("image should be only two or three dimensional.")
+        raise WrongDimension("image should be only two or three dimensional.")
 
-def channel_splitter_apply(image, channels_dimension = "last"):
+def channel_splitter_apply(image: np.ndarray, channels_dimension: Union[str, int] = "last") -> list:
     """
     Usage: Use this function to split the channels of your image into its constructing channels.
 
@@ -101,7 +100,7 @@ def channel_splitter_apply(image, channels_dimension = "last"):
     elif channels_dimension == 'first' or channels_dimension == 0:
         channels_dimension = 0
     else:
-        print("channels_dimesions should be 'first', or 'last'. (0 or 2 are also possible.)")
+        raise WrongAttribute("channels_dimesions should be 'first', or 'last'. (0 or 2 are also possible.)")
 
     #checking if the image has only two dimenstions (if it's grayscale)
     if (len(image.shape) == 2):
@@ -118,4 +117,4 @@ def channel_splitter_apply(image, channels_dimension = "last"):
         return channels
 
     #if image has more than three dimesions or is one dimensional
-    print("image should be only two or three dimensional.")
+    raise WrongDimension("image should be only two or three dimensional.")

@@ -1,4 +1,5 @@
 import numpy as np
+from typing import Union
 from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
 
 class ChannelMergeer:
@@ -58,7 +59,7 @@ class ChannelMergeer:
         return np.concatenate([*chs], axis = self.__channels_dimension)
 
 
-def channel_merger_apply(channels: list, channels_dimension: str = "last") -> np.ndarray:
+def channel_merger_apply(channels: list, channels_dimension: Union[str, int] = "last") -> np.ndarray:
     """
     Usage: Use this function to merge the channels of an image and construct the image.
 
