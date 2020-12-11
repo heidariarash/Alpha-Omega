@@ -1,24 +1,20 @@
 import numpy as np
 from alphaomega.cv.channel.channel_split import channel_splitter_apply
 from alphaomega.cv.channel.channel_merge import channel_merger_apply
+from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
 
 class BorderIntropolation:
     """
     Usage: Use this class to intropolate the borders of a single channel image.
     """
     def __init__(self):
-        """
-        Usage: The constructor of the BorderIntropolation class.
-        Inputs: Nothing.
-        Returns: An instantiation of the BorderIntropolation class.
-        """
-        self.__top = 1
-        self.__bottom = 1
-        self.__left = 1
-        self.__right = 1
+        self.__top         = 1
+        self.__bottom      = 1
+        self.__left        = 1
+        self.__right       = 1
         self.__border_type = "constant"
 
-    def config(self, **kwargs):
+    def config(self, **kwargs: dict) -> None:
         """
         Usage: Use this method to configure the parameteres of the BorderIntropolation instantiation.
 
@@ -38,44 +34,47 @@ class BorderIntropolation:
         Returns: Nothing.
         """
         for key, value in kwargs.items():
+
             if key == "top":
                 if (int(value) >= 0):
                     self.__top = value
                 else:
-                    print("The value of top should be an integer greater than -1.")
+                    raise WrongAttribute("The value of top should be an integer greater than -1.")
+
             elif key == "bottom":
                 if (int(value) >= 0):
                     self.__bottom = value
                 else:
-                    print("The value of bottom should be an integer greater than -1.")
+                    raise WrongAttribute("The value of bottom should be an integer greater than -1.")
+
             elif key == "left":
                 if (int(value) >= 0):
                     self.__left = value
                 else:
-                    print("The value of left should be an integer greater than -1.")
+                    raise WrongAttribute("The value of left should be an integer greater than -1.")
+
             elif key == "right":
                 if (int(value) >= 0):
                     self.__right = value
                 else:
-                    print("The value of right should be an integer greater than -1.")
+                    raise WrongAttribute("The value of right should be an integer greater than -1.")
+
             elif key == "pixels_add":
                 if (int(value) > 0):
-                    self.__left = value
-                    self.__right = value
-                    self.__top = value
+                    self.__left   = value
+                    self.__right  = value
+                    self.__top    = value
                     self.__bottom = value
                 else:
-                    print("The value of pixels_add should be an integer greater than -1.")
+                    raise WrongAttribute("The value of pixels_add should be an integer greater than -1.")
+
             elif key == "border_type":
                 if (value not in ["constant", "reflect", "replicate", "wrap", "reflect_without_border"]):
-                    print('The only options for border are "constant", "reflect", "replicate", "wrap", and "reflect_without_border".')
+                    raise WrongAttribute('The only options for border are "constant", "reflect", "replicate", "wrap", and "reflect_without_border".')
                 else:
                     self.__border_type = value
 
-        if (self.__top == 0 and self.__bottom == 0 and self.__right == 0 and self.__left == 0):
-            print("Really?? You don't need intropolation? So why are you using this class? Please send me an email and explain: arashheidari94@outlook.com =)")
-
-    def apply(self, image):
+    def apply(self, image: np.ndarray) -> np.ndarray:
         """
         Usage: Use this method to apply BorderIntropolation to an image.
 
@@ -88,9 +87,11 @@ class BorderIntropolation:
         #checking if the image has three dimensions.
         if (len(image.shape) == 3):
             channels_applied = []
-            channels = channel_splitter_apply(image)
+            channels         = channel_splitter_apply(image)
+
             for index, channel in enumerate(channels):
                 channels_applied.append(self.apply(channel))
+
             image = channel_merger_apply(channels_applied)
             return image
 
@@ -123,19 +124,19 @@ class BorderIntropolation:
                 image = np.concatenate((image, np.flip(image[image.shape[0] - self.__bottom - 1:-1,:], axis=0)), axis= 0)
                 return image
 
-            #only option is warp
+            #only option left is warp
             orig  = image.copy()
             image = np.concatenate((orig[:, image.shape[1] - self.__left:], image), axis= 1)
             image = np.concatenate((image, orig[:, 0:self.__right]), axis= 1)
-            orig = image.copy()
+            orig  = image.copy()
             image = np.concatenate((image[image.shape[0] - self.__top:,:], image), axis= 0)
             image = np.concatenate((image, orig[:self.__bottom,:]), axis= 0)
             return image
 
-        print("image should be 2 dimensional or 3 dimensional.")
+        raise WrongDimension("image should be 2 dimensional or 3 dimensional.")
 
 
-def border_intropolate_apply(image, pixels_add, border_type = "constant"):
+def border_intropolate_apply(image: np.ndarray, pixels_add: int, border_type: str = "constant") -> np.ndarray:
     """
     Usage: Use this function to apply border intropolation to an image.
 
@@ -154,9 +155,11 @@ def border_intropolate_apply(image, pixels_add, border_type = "constant"):
     """
     if (len(image.shape) == 3):
         channels_applied = []
-        channels = channel_splitter_apply(image)
+        channels         = channel_splitter_apply(image)
+
         for index, channel in enumerate(channels):
             channels_applied.append(border_intropolate_apply(channel, pixels_add, border_type))
+
         image = channel_merger_apply(channels_applied)
         return image
 
@@ -193,16 +196,11 @@ def border_intropolate_apply(image, pixels_add, border_type = "constant"):
             orig  = image.copy()
             image = np.concatenate((orig[:, image.shape[1] - pixels_add:], image), axis= 1)
             image = np.concatenate((image, orig[:, 0:pixels_add]), axis= 1)
-            orig = image.copy()
+            orig  = image.copy()
             image = np.concatenate((image[image.shape[0] - pixels_add:,:], image), axis= 0)
             image = np.concatenate((image, orig[:pixels_add,:]), axis= 0)
             return image
 
-        print("wrong argument for border type. It could be one of this options:")
-        print("constant")
-        print("replicate")
-        print("reflect")
-        print("reflect_without_border")
-        print("warp")
+        raise WrongAttribute("wrong argument for border type. It could be one of this options:\nconstant\nreplicate\nreflect\nreflect_without_border\nwarp")
     
-    print("image should be 2 dimensional or 3 dimensional.")
+    raise WrongDimension("image should be 2 dimensional or 3 dimensional.")
