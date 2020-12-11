@@ -153,6 +153,10 @@ def border_intropolate_apply(image: np.ndarray, pixels_add: int, border_type: st
     Returns:
         - The new image with intropolated borders.
     """
+    #checking for pixels_add
+    if int(pixels_add) < 0:
+        raise WrongAttribute("pixels_add should be a non-negative integer.")
+
     if (len(image.shape) == 3):
         channels_applied = []
         channels         = channel_splitter_apply(image)
