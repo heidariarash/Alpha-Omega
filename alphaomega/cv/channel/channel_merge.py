@@ -1,18 +1,14 @@
 import numpy as np
+from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
 
 class ChannelMergeer:
     """
     Usage: Use this class to merge different channels of an image into an image.
     """
     def __init__(self):
-        """
-        Usage  : The constructor of the ChannelMerge class.
-        Inputs : Nothing.
-        Returns: An instantiation of the ChannelMerge class.
-        """
         self.__channels_dimension = 2
 
-    def config(self, **kwargs):
+    def config(self, **kwargs) -> None:
         """
         Usage: Use this method to configure the parameters of the ChannelMerger instantiation.
 
@@ -22,15 +18,19 @@ class ChannelMergeer:
         Returns: Nothing.
         """
         for key, value in kwargs.items():
+
             if key == "channels_dimension":
+
                 if value == "first" or value == 0:
                     self.__channels_dimension = 0
+
                 elif value == "last" or value == 2:
                     self.__channels_dimension = 2
-                else:
-                    print("Wrong value for channels_dimension. It could be only 'first' or 'last' (0 and 2 are also possible).")
 
-    def apply(self, *channels):
+                else:
+                    raise WrongAttribute("Wrong value for channels_dimension. It could be only 'first' or 'last' (0 and 2 are also possible).")
+
+    def apply(self, *channels) -> np.ndarray:
         """
         Usage: Use this method to apply the merging of the channels and build a new image.
 
@@ -44,29 +44,27 @@ class ChannelMergeer:
 
         #checking if the first channel has only 2 dimensions.
         if len(shape) != 2:
-            print("Channels should be 2d.")
-            return
+            raise WrongDimension("Channels should be 2 dimensional.")
         
         chs = [np.zeros_like(channels[0])] * len(channels)
 
         #checking if all the channels have the same shape. If they have, expanding them.
         for index, channel in enumerate(channels):
             if channel.shape != shape:
-                print(f"Channels should be the same size. The channel {index+1} has a different shape as the first channel.")
-                return
+                raise WrongDimension(f"Channels should be the same size. The channel {index+1} has a different shape from the first channel.")
             else:
                 chs[index] = np.expand_dims(channel, self.__channels_dimension)
             
         return np.concatenate([*chs], axis = self.__channels_dimension)
 
 
-def channel_merger_apply(channels, channels_dimension = "last"):
+def channel_merger_apply(channels: list, channels_dimension: str = "last") -> np.ndarray:
     """
     Usage: Use this function to merge the channels of an image and construct the image.
 
     Inputs:
-        channels_dimension: The dimension of the channels. It could be either "first" or "last" (or equally 0 and 2). if it is "first" and you have 3 750x750 channels, the shape of the result is (3,750,750).
         channels           : The channels of the image. They should be the same size.
+        channels_dimension: The dimension of the channels. It could be either "first" or "last" (or equally 0 and 2). if it is "first" and you have 3 750x750 channels, the shape of the result is (3,750,750).
 
     Returns:
         - The constructed image using the channels.
@@ -77,22 +75,20 @@ def channel_merger_apply(channels, channels_dimension = "last"):
     elif channels_dimension == 'first' or channels_dimension == 0:
         channels_dimension = 0
     else:
-        print("channels_dimesions should be 'first', or 'last'. (0 or 2 are also possible.)")
+        raise WrongAttribute("channels_dimesions should be 'first', or 'last'. (0 or 2 are also possible.)")
 
     shape = channels[0].shape
 
     #checking if the first channel has only 2 dimensions.
     if len(shape) != 2:
-        print("Channels should be 2d.")
-        return
+        raise WrongDimension("Channels should be 2 dimensional.")
     
     chs = [np.zeros_like(channels[0])] * len(channels)
 
     #checking if all the channels have the same shape. If they have, expanding them.
     for index, channel in enumerate(channels):
         if channel.shape != shape:
-            print(f"Channels should be the same size. The channel {index+1} has a different shape as the first channel.")
-            return
+            raise WrongDimension(f"Channels should be the same size. The channel {index+1} has a different shape as the first channel.")
         else:
             chs[index] = np.expand_dims(channel, channels_dimension)
         
