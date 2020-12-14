@@ -18,12 +18,12 @@ class Converter:
             source      : The source color space. It should be one of these options:
                 "RGB" or "RGBA"
                 "BGR" or "BGRA"
-                "HSL"
+                "HLS"
                 "HSV"
             destination : The destination color space. It should be one of these options:
                 "RGB" or "RGBA"
                 "BGR" or "BGRA"
-                "HSL"
+                "HLS"
                 "HSV"
                 "GRAY"
 
@@ -32,14 +32,14 @@ class Converter:
         for key, value in kwargs.items():
 
             if key == "source":
-                if value not in ["RGB", "RGBA", "BGRA", "BGR", "HSL", "HSV"]:
-                    raise WrongAttribute('The only accpetable values for source are: "RGB", "BGR", "HSL", and "HSV".')
+                if value not in ["RGB", "RGBA", "BGRA", "BGR", "HLS", "HSV"]:
+                    raise WrongAttribute('The only accpetable values for source are: "RGB", "BGR", "HLS", and "HSV".')
                 else:
                     self.__src = value
 
             elif key == "destination":
-                if value not in ["RGB", "BGR", "RGBA", "BGRA", "HSL", "HSV", "GRAY"]:
-                    raise WrongAttribute('The only accpetable values for source are: "RGB", "BGR", "HSL", "HSV", and "GRAY".')
+                if value not in ["RGB", "BGR", "RGBA", "BGRA", "HLS", "HSV", "GRAY"]:
+                    raise WrongAttribute('The only accpetable values for source are: "RGB", "BGR", "HLS", "HSV", and "GRAY".')
                 else:
                     self.__dest = value
 
@@ -77,8 +77,8 @@ class Converter:
                 return self.__RGB2RGBA(image)
             elif self.__dest == "BGRA":
                 return self.__RGB2BGRA(image)
-            elif self.__dest == "HSL":
-                return self.__RGB2HSL(image)
+            elif self.__dest == "HLS":
+                return self.__RGB2HLS(image)
             elif self.__dest == "HSV":
                 return self.__RGB2HSV(image)
             elif self.__dest == "GRAY":
@@ -91,8 +91,8 @@ class Converter:
                 return self.__RGB2BGRA(image)
             elif self.__dest == "BGRA":
                 return self.__RGB2RGBA(image)
-            elif self.__dest == "HSL":
-                return self.__BGR2HSL(image)
+            elif self.__dest == "HLS":
+                return self.__BGR2HLS(image)
             elif self.__dest == "HSV":
                 return self.__BGR2HSV(image)
             elif self.__dest == "GRAY":
@@ -105,8 +105,8 @@ class Converter:
                 return self.__RGBA2RGB(image)
             elif self.__dest == "BGRA":
                 return self.__RGBA2BGRA(image)
-            elif self.__dest == "HSL":
-                return self.__RGBA2HSL(image)
+            elif self.__dest == "HLS":
+                return self.__RGBA2HLS(image)
             elif self.__dest == "HSV":
                 return self.__RGBA2HSV(image)
             elif self.__dest == "GRAY":
@@ -119,26 +119,26 @@ class Converter:
                 return self.__RGBA2BGRA(image)
             elif self.__dest == "RGB":
                 return self.__RGBA2BGR(image)
-            elif self.__dest == "HSL":
-                return self.__BGRA2HSL(image)
+            elif self.__dest == "HLS":
+                return self.__BGRA2HLS(image)
             elif self.__dest == "HSV":
                 return self.__BGRA2HSV(image)
             elif self.__dest == "GRAY":
                 return self.__BGRA2GRAY(image)
 
-        elif self.__src == "HSL": #need revisiting
+        elif self.__src == "HLS": #need revisiting
             if self.__dest == "BGR":
-                return self.__HSL2BGR(image)
+                return self.__HLS2BGR(image)
             elif self.__dest == "RGBA":
-                return self.__HSL2RGBA(image)
+                return self.__HLS2RGBA(image)
             elif self.__dest == "BGRA":
-                return self.__HSL2BGRA(image)
+                return self.__HLS2BGRA(image)
             elif self.__dest == "RGB":
-                return self.__HSL2RGB(image)
+                return self.__HLS2RGB(image)
             elif self.__dest == "HSV":
-                return self.__HSL2HSV(image)
+                return self.__HLS2HSV(image)
             elif self.__dest == "GRAY":
-                return self.__HSL2GRAY(image)
+                return self.__HLS2GRAY(image)
 
         elif self.__src == "HSV": #need revisiting
             if self.__dest == "BGR":
@@ -147,8 +147,8 @@ class Converter:
                 return self.__HSV2RGBA(image)
             elif self.__dest == "BGRA":
                 return self.__HSV2BGRA(image)
-            elif self.__dest == "HSL":
-                return self.__HSV2HSL(image)
+            elif self.__dest == "HLS":
+                return self.__HSV2HLS(image)
             elif self.__dest == "RGB":
                 return self.__HSV2RGB(image)
             elif self.__dest == "GRAY":
@@ -207,7 +207,7 @@ class Converter:
         converted = self.__RGBA2GRAY(image)
         return converted
 
-    def __RGB2HSL(self, image: np.ndarray) -> np.ndarray:
+    def __RGB2HLS(self, image: np.ndarray) -> np.ndarray:
         rprime = image[:,:,0] / 255
         gprime = image[:,:,1] / 255
         bprime = image[:,:,2] / 255
@@ -225,19 +225,19 @@ class Converter:
         converted = channel_merger_apply([H_channel, S_channel, L_channel])
         return converted
 
-    def __BGR2HSL(self, image: np.ndarray) -> np.ndarray:
+    def __BGR2HLS(self, image: np.ndarray) -> np.ndarray:
         converted = self.__RGB2BGR(image)
-        converted = self.__RGB2HSL(image)
+        converted = self.__RGB2HLS(image)
         return converted
 
-    def __RGBA2HSL(self, image: np.ndarray) -> np.ndarray:
+    def __RGBA2HLS(self, image: np.ndarray) -> np.ndarray:
         converted = self.__RGBA2RGB(image)
-        converted = self.__RGB2HSL(image)
+        converted = self.__RGB2HLS(image)
         return converted
 
-    def __BGRA2HSL(self, image: np.ndarray) -> np.ndarray:
+    def __BGRA2HLS(self, image: np.ndarray) -> np.ndarray:
         converted = self.__RGBA2BGR(image)
-        converted = self.__RGB2HSL(image)
+        converted = self.__RGB2HLS(image)
         return converted
 
     def __RGB2HSV(self, image: np.ndarray) -> np.ndarray:
@@ -309,9 +309,9 @@ class Converter:
         converted = self.__RGB2RGBA(image)
         return converted
 
-    def __HSV2HSL(self, image: np.ndarray) -> np.ndarray:
+    def __HSV2HLS(self, image: np.ndarray) -> np.ndarray:
         converted = self.__HSV2RGB(image)
-        converted = self.__RGB2HSL(image)
+        converted = self.__RGB2HLS(image)
         return converted
 
     def __HSV2GRAY(self, image: np.ndarray) -> np.ndarray:
@@ -319,7 +319,7 @@ class Converter:
         converted = self.__RGB2GRAY(image)
         return converted
     
-    def __HSL2RGB(self, image: np.ndarray) -> np.ndarray:
+    def __HLS2RGB(self, image: np.ndarray) -> np.ndarray:
         h = image[:,:,0]
         s = image[:,:,1]
         l = image[:,:,2]
@@ -342,28 +342,28 @@ class Converter:
         converted = channel_merger_apply([r,g,b])
         return converted.astype(np.int16)
 
-    def __HSL2BGR(self, image: np.ndarray) -> np.ndarray:
-        converted = self.__HSL2RGB(image)
+    def __HLS2BGR(self, image: np.ndarray) -> np.ndarray:
+        converted = self.__HLS2RGB(image)
         converted = self.__RGB2BGR(image)
         return converted
 
-    def __HSL2BGRA(self, image: np.ndarray) -> np.ndarray:
-        converted = self.__HSL2RGB(image)
+    def __HLS2BGRA(self, image: np.ndarray) -> np.ndarray:
+        converted = self.__HLS2RGB(image)
         converted = self.__RGB2BGRA(image)
         return converted
 
-    def __HSL2RGBA(self, image: np.ndarray) -> np.ndarray:
-        converted = self.__HSL2RGB(image)
+    def __HLS2RGBA(self, image: np.ndarray) -> np.ndarray:
+        converted = self.__HLS2RGB(image)
         converted = self.__RGB2RGBA(image)
         return converted
 
-    def __HSL2HSV(self, image: np.ndarray) -> np.ndarray:
-        converted = self.__HSL2RGB(image)
+    def __HLS2HSV(self, image: np.ndarray) -> np.ndarray:
+        converted = self.__HLS2RGB(image)
         converted = self.__RGB2HSV(image)
         return converted
 
-    def __HSL2GRAY(self, image: np.ndarray) -> np.ndarray:
-        converted = self.__HSL2RGB(image)
+    def __HLS2GRAY(self, image: np.ndarray) -> np.ndarray:
+        converted = self.__HLS2RGB(image)
         converted = self.__RGB2GRAY(image)
         return converted
 
@@ -376,22 +376,22 @@ def converter_apply(image: np.ndarray, source: str, destination: str) -> np.ndar
         source      : The source color space. It should be one of these options:
             "RGB" or "RGBA"
             "BGR" or "BGRA"
-            "HSL"
+            "HLS"
             "HSV"
         destination : The destination color space. It should be one of these options:
             "RGB"
             "BGR"
-            "HSL"
+            "HLS"
             "HSV"
             "GRAY"
 
     Returns: An image with the new color space.
     """
-    if source not in ["RGB", "RGBA", "BGRA", "BGR", "HSL", "HSV"]:
-        raise WrongAttribute('The only accpetable values for source are: "RGB", "BGR", "HSL", and "HSV".')
+    if source not in ["RGB", "RGBA", "BGRA", "BGR", "HLS", "HSV"]:
+        raise WrongAttribute('The only accpetable values for source are: "RGB", "BGR", "HLS", and "HSV".')
 
-    if destination not in ["RGB", "BGR", "RGBA", "BGRA", "HSL", "HSV", "GRAY"]:
-        raise WrongAttribute('The only accpetable values for source are: "RGB", "BGR", "HSL", "HSV", and "GRAY".')
+    if destination not in ["RGB", "BGR", "RGBA", "BGRA", "HLS", "HSV", "GRAY"]:
+        raise WrongAttribute('The only accpetable values for source are: "RGB", "BGR", "HLS", "HSV", and "GRAY".')
 
     if len(image.shape) != 3:
         raise WrongDimension("This is not an image...")
@@ -409,8 +409,8 @@ def converter_apply(image: np.ndarray, source: str, destination: str) -> np.ndar
             return RGB2RGBA(image)
         elif destination == "BGRA":
             return RGB2BGRA(image)
-        elif destination == "HSL":
-            return RGB2HSL(image)
+        elif destination == "HLS":
+            return RGB2HLS(image)
         elif destination == "HSV":
             return RGB2HSV(image)
         elif destination == "GRAY":
@@ -423,8 +423,8 @@ def converter_apply(image: np.ndarray, source: str, destination: str) -> np.ndar
             return RGB2BGRA(image)
         elif destination == "BGRA":
             return RGB2RGBA(image)
-        elif destination == "HSL":
-            return BGR2HSL(image)
+        elif destination == "HLS":
+            return BGR2HLS(image)
         elif destination == "HSV":
             return BGR2HSV(image)
         elif destination == "GRAY":
@@ -437,8 +437,8 @@ def converter_apply(image: np.ndarray, source: str, destination: str) -> np.ndar
             return RGBA2RGB(image)
         elif destination == "BGRA":
             return RGBA2BGRA(image)
-        elif destination == "HSL":
-            return RGBA2HSL(image)
+        elif destination == "HLS":
+            return RGBA2HLS(image)
         elif destination == "HSV":
             return RGBA2HSV(image)
         elif destination == "GRAY":
@@ -451,26 +451,26 @@ def converter_apply(image: np.ndarray, source: str, destination: str) -> np.ndar
             return RGBA2BGRA(image)
         elif destination == "RGB":
             return RGBA2BGR(image)
-        elif destination == "HSL":
-            return BGRA2HSL(image)
+        elif destination == "HLS":
+            return BGRA2HLS(image)
         elif destination == "HSV":
             return BGRA2HSV(image)
         elif destination == "GRAY":
             return BGRA2GRAY(image)
 
-    elif source == "HSL": #need revisiting
+    elif source == "HLS": #need revisiting
         if destination == "BGR":
-            return HSL2BGR(image)
+            return HLS2BGR(image)
         elif destination == "RGBA":
-            return HSL2RGBA(image)
+            return HLS2RGBA(image)
         elif destination == "BGRA":
-            return HSL2BGRA(image)
+            return HLS2BGRA(image)
         elif destination == "RGB":
-            return HSL2RGB(image)
+            return HLS2RGB(image)
         elif destination == "HSV":
-            return HSL2HSV(image)
+            return HLS2HSV(image)
         elif destination == "GRAY":
-            return HSL2GRAY(image)
+            return HLS2GRAY(image)
 
     elif source == "HSV": #need revisiting
         if destination == "BGR":
@@ -479,8 +479,8 @@ def converter_apply(image: np.ndarray, source: str, destination: str) -> np.ndar
             return HSV2RGBA(image)
         elif destination == "BGRA":
             return HSV2BGRA(image)
-        elif destination == "HSL":
-            return HSV2HSL(image)
+        elif destination == "HLS":
+            return HSV2HLS(image)
         elif destination == "RGB":
             return HSV2RGB(image)
         elif destination == "GRAY":
@@ -539,7 +539,7 @@ def BGRA2GRAY(image: np.ndarray) -> np.ndarray:
     converted = RGBA2GRAY(image)
     return converted
 
-def RGB2HSL(image: np.ndarray) -> np.ndarray:
+def RGB2HLS(image: np.ndarray) -> np.ndarray:
     rprime = image[:,:,0] / 255
     gprime = image[:,:,1] / 255
     bprime = image[:,:,2] / 255
@@ -557,19 +557,19 @@ def RGB2HSL(image: np.ndarray) -> np.ndarray:
     converted = channel_merger_apply([H_channel, S_channel, L_channel])
     return converted
 
-def BGR2HSL(image: np.ndarray) -> np.ndarray:
+def BGR2HLS(image: np.ndarray) -> np.ndarray:
     converted = RGB2BGR(image)
-    converted = RGB2HSL(image)
+    converted = RGB2HLS(image)
     return converted
 
-def RGBA2HSL(image: np.ndarray) -> np.ndarray:
+def RGBA2HLS(image: np.ndarray) -> np.ndarray:
     converted = RGBA2RGB(image)
-    converted = RGB2HSL(image)
+    converted = RGB2HLS(image)
     return converted
 
-def BGRA2HSL(image: np.ndarray) -> np.ndarray:
+def BGRA2HLS(image: np.ndarray) -> np.ndarray:
     converted = RGBA2BGR(image)
-    converted = RGB2HSL(image)
+    converted = RGB2HLS(image)
     return converted
 
 def RGB2HSV(image: np.ndarray) -> np.ndarray:
@@ -641,9 +641,9 @@ def HSV2RGBA(image: np.ndarray) -> np.ndarray:
     converted = RGB2RGBA(image)
     return converted
 
-def HSV2HSL(image: np.ndarray) -> np.ndarray:
+def HSV2HLS(image: np.ndarray) -> np.ndarray:
     converted = HSV2RGB(image)
-    converted = RGB2HSL(image)
+    converted = RGB2HLS(image)
     return converted
 
 def HSV2GRAY(image: np.ndarray) -> np.ndarray:
@@ -651,7 +651,7 @@ def HSV2GRAY(image: np.ndarray) -> np.ndarray:
     converted = RGB2GRAY(image)
     return converted
 
-def HSL2RGB(image: np.ndarray) -> np.ndarray:
+def HLS2RGB(image: np.ndarray) -> np.ndarray:
     h = image[:,:,0]
     s = image[:,:,1]
     l = image[:,:,2]
@@ -674,27 +674,27 @@ def HSL2RGB(image: np.ndarray) -> np.ndarray:
     converted = channel_merger_apply([r,g,b])
     return converted.astype(np.int16)
 
-def HSL2BGR(image: np.ndarray) -> np.ndarray:
-    converted = HSL2RGB(image)
+def HLS2BGR(image: np.ndarray) -> np.ndarray:
+    converted = HLS2RGB(image)
     converted = RGB2BGR(image)
     return converted
 
-def HSL2BGRA(image: np.ndarray) -> np.ndarray:
-    converted = HSL2RGB(image)
+def HLS2BGRA(image: np.ndarray) -> np.ndarray:
+    converted = HLS2RGB(image)
     converted = RGB2BGRA(image)
     return converted
 
-def HSL2RGBA(image: np.ndarray) -> np.ndarray:
-    converted = HSL2RGB(image)
+def HLS2RGBA(image: np.ndarray) -> np.ndarray:
+    converted = HLS2RGB(image)
     converted = RGB2RGBA(image)
     return converted
 
-def HSL2HSV(image: np.ndarray) -> np.ndarray:
-    converted = HSL2RGB(image)
+def HLS2HSV(image: np.ndarray) -> np.ndarray:
+    converted = HLS2RGB(image)
     converted = RGB2HSV(image)
     return converted
 
-def HSL2GRAY(image: np.ndarray) -> np.ndarray:
-    converted = HSL2RGB(image)
+def HLS2GRAY(image: np.ndarray) -> np.ndarray:
+    converted = HLS2RGB(image)
     converted = RGB2GRAY(image)
     return converted
