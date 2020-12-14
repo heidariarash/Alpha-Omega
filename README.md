@@ -1,5 +1,5 @@
 # Alpha-Omega
-Alpha-Omega is an open-source artificial intelligence library/framework built on NumPy and PILLOW still under development. I would appreciate if you contribute to this project if you are a python enthusiast and:
+Alpha-Omega is an open-source artificial intelligence library/framework built on NumPy still under development. I would appreciate if you contribute to this project if you are a python enthusiast and:
 
 + Familiar with Computer Vision algorithms,
 + Familiar with classical Machine Learning algorithmsm
