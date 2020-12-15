@@ -241,41 +241,20 @@ class Converter:
         return converted
 
     def __RGB2HSV(self, image: np.ndarray) -> np.ndarray:
-        r = image[:,:,0]
-        g = image[:,:,1]
-        b = image[:,:,2]
-        chigh = np.max(image, axis=2)
-        clow = np.min(image, axis=2)
-        crng = chigh - clow
-        S_channel = np.zeros_like(crng)
-        S_channel[chigh != 0] = crng[chigh != 0] / (chigh[chigh != 0])
-        V_channel = chigh / 255
-        H_channel = np.zeros_like(S_channel)
-        rprime = np.zeros_like(S_channel)
-        gprime = np.zeros_like(S_channel)
-        bprime = np.zeros_like(S_channel)
-        rprime[crng != 0] = (chigh[crng != 0] - r[crng != 0]) / crng[crng != 0]
-        gprime[crng != 0] = (chigh[crng != 0] - g[crng != 0]) / crng[crng != 0]
-        bprime[crng != 0] = (chigh[crng != 0] - b[crng != 0]) / crng[crng != 0]
-        H_channel[chigh == r] = bprime[chigh == r] - gprime [chigh == r]
-        H_channel[chigh == g] = rprime[chigh == g] - bprime [chigh == g] + 2
-        H_channel[chigh == b] = gprime[chigh == b] - rprime [chigh == b] + 4
-        H_channel[H_channel < 0] = H_channel[H_channel < 0] + 6
-        H_channel = H_channel / 6
-        # H_channel[cmax == bprime] = (60 * ((rprime[cmax == bprime] - gprime[cmax == bprime]) / delta[cmax == bprime]) + 240).astype(np.int16) % 360
-        # rprime = image[:,:,0] / 255
-        # gprime = image[:,:,1] / 255
-        # bprime = image[:,:,2] / 255
-        # cmax = np.max(image/255, axis=2)
-        # cmin = np.min(image/255, axis=2)
-        # delta = cmax - cmin
-        # S_channel = np.zeros_like(delta)
-        # S_channel[cmax != 0] = delta[cmax != 0] / (cmax[cmax != 0])
-        # H_channel = np.zeros_like(delta)
-        # H_channel[cmax == rprime] = (60 * ((gprime[cmax == rprime] - bprime[cmax == rprime]) / delta[cmax == rprime]) ).astype(np.int16) % 360
-        # H_channel[cmax == gprime] = (60 * ((bprime[cmax == gprime] - gprime[cmax == gprime]) / delta[cmax == gprime]) + 120).astype(np.int16) % 360
-        # H_channel[cmax == bprime] = (60 * ((rprime[cmax == bprime] - gprime[cmax == bprime]) / delta[cmax == bprime]) + 240).astype(np.int16) % 360
-        converted = channel_merger_apply([H_channel, S_channel, V_channel])
+        H_channel[cmax == bprime] = (60 * ((rprime[cmax == bprime] - gprime[cmax == bprime]) / delta[cmax == bprime]) + 240).astype(np.int16) % 360
+        rprime = image[:,:,0] / 255
+        gprime = image[:,:,1] / 255
+        bprime = image[:,:,2] / 255
+        cmax = np.max(image/255, axis=2)
+        cmin = np.min(image/255, axis=2)
+        delta = cmax - cmin
+        S_channel = np.zeros_like(delta)
+        S_channel[cmax != 0] = delta[cmax != 0] / (cmax[cmax != 0])
+        H_channel = np.zeros_like(delta)
+        H_channel[cmax == rprime] = (60 * ((gprime[cmax == rprime] - bprime[cmax == rprime]) / delta[cmax == rprime]) ).astype(np.int16) % 360
+        H_channel[cmax == gprime] = (60 * ((bprime[cmax == gprime] - gprime[cmax == gprime]) / delta[cmax == gprime]) + 120).astype(np.int16) % 360
+        H_channel[cmax == bprime] = (60 * ((rprime[cmax == bprime] - gprime[cmax == bprime]) / delta[cmax == bprime]) + 240).astype(np.int16) % 360
+        converted = channel_merger_apply([H_channel, S_channel, cmax])
         return converted
 
     def __BGR2HSV(self, image: np.ndarray) -> np.ndarray:
@@ -297,42 +276,21 @@ class Converter:
         h = image[:,:,0]
         s = image[:,:,1]
         v = image[:,:,2]
-        hprime = (6 * h) % 6
-        c1 = np.floor(hprime)
-        c2 = hprime - c1
-        x = (1 - s) * v
-        y = (1 - (s * c2)) * v
-        z = (1 - (s * (1 - c2))) * v
-        rprime = np.zeros_like(h)
-        gprime = np.zeros_like(h)
-        bprime = np.zeros_like(h)
-        rprime[c1 == 0], gprime[c1 == 0], bprime[c1 == 0] = v[c1 == 0], z[c1 == 0], x[c1 == 0]
-        rprime[c1 == 1], gprime[c1 == 1], bprime[c1 == 1] = y[c1 == 1], v[c1 == 1], x[c1 == 1]
-        rprime[c1 == 2], gprime[c1 == 2], bprime[c1 == 2] = x[c1 == 2], v[c1 == 2], z[c1 == 2]
-        rprime[c1 == 3], gprime[c1 == 3], bprime[c1 == 3] = x[c1 == 3], y[c1 == 3], v[c1 == 3]
-        rprime[c1 == 4], gprime[c1 == 4], bprime[c1 == 4] = z[c1 == 4], x[c1 == 4], v[c1 == 4]
-        rprime[c1 == 5], gprime[c1 == 5], bprime[c1 == 5] = v[c1 == 5], x[c1 == 5], y[c1 == 5]
-        r = np.round(256 * rprime)
-        g = np.round(256 * gprime)
-        b = np.round(256 * bprime)
-        r[r > 255] = 255
-        g[g > 255] = 255
-        b[b > 255] = 255
-        # C = v * s
-        # X = C * (np.ones_like(C) - np.abs(((h / 60) % 2) - np.ones_like(C)))
-        # m = v - C
-        # rprime = np.zeros_like(C)
-        # gprime = np.zeros_like(C)
-        # bprime = np.zeros_like(C)
-        # rprime, gprime = C, X
-        # rprime[h>=60], gprime[h>=60] = X[h>=60], C[h>=60]
-        # gprime[h>=120], bprime[h>=120] = C[h>=120], X[h>=120]
-        # gprime[h>=180], bprime[h>=180] = X[h>=180], C[h>=180]
-        # rprime[h>=240], bprime[h>=240] = X[h>=240], C[h>=240]
-        # rprime[h>=300], bprime[h>=300] = C[h>=300], X[h>=300]
-        # r = (rprime + m) *255
-        # g = (gprime + m) *255
-        # b = (bprime + m) *255
+        C = v * s
+        X = C * (np.ones_like(C) - np.abs(((h / 60) % 2) - np.ones_like(C)))
+        m = v - C
+        rprime = np.zeros_like(C)
+        gprime = np.zeros_like(C)
+        bprime = np.zeros_like(C)
+        rprime, gprime = C, X
+        rprime[h>=60], gprime[h>=60] = X[h>=60], C[h>=60]
+        gprime[h>=120], bprime[h>=120] = C[h>=120], X[h>=120]
+        gprime[h>=180], bprime[h>=180] = X[h>=180], C[h>=180]
+        rprime[h>=240], bprime[h>=240] = X[h>=240], C[h>=240]
+        rprime[h>=300], bprime[h>=300] = C[h>=300], X[h>=300]
+        r = (rprime + m) *255
+        g = (gprime + m) *255
+        b = (bprime + m) *255
 
         converted = channel_merger_apply([r,g,b])
         return converted.astype(np.int16)
