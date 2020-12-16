@@ -3,9 +3,9 @@ from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
 from alphaomega.cv.border.border_intropolation import border_intropolate_apply
 from alphaomega.cv.channel.channel_merge import channel_merger_apply
 
-class Dilation:
+class Erosion:
     """
-    You can use this class to dilate an image.
+    You can use this class to erose an image.
     """
     def __init__(self):
         self.__kernel_size = 3
@@ -13,7 +13,7 @@ class Dilation:
 
     def config(self, **kwargs) -> None:
         """
-        Usage: Use this method to configure the parameters of the Dilation instantiation.
+        Usage: Use this method to configure the parameters of the Erosion instantiation.
 
         Inputs:
             kernel_size: The size of the kernel.
@@ -44,10 +44,10 @@ class Dilation:
         Usage: Use this method to apply Dilation to your image.
         
         Inputs:
-            image: The dilation will be applied on this image.
+            image: The erosion will be applied on this image.
 
         Returns:
-            - The dilated image.
+            - The erosed image.
         """
         #initializing different parameters
         filtered_image = np.zeros_like(image, dtype=np.int16)
@@ -59,12 +59,12 @@ class Dilation:
         #finding each element of the filtered image.
         for row in range(image.shape[0]):
             for column in range(image.shape[1]):
-                filtered_image[row, column] = np.max( image_border[row : row + 2 * half_size + 1 , column :column + 2*half_size + 1], axis = (0,1) )
+                filtered_image[row, column] = np.min( image_border[row : row + 2 * half_size + 1 , column :column + 2*half_size + 1], axis = (0,1) )
 
         return filtered_image
 
 
-def dilaton_apply(image: np.ndarray, kernel_size: int = 3, border_type: str = "constant") -> np.ndarray:
+def erosion_apply(image: np.ndarray, kernel_size: int = 3, border_type: str = "constant") -> np.ndarray:
     #checking for the correct border_type
     if (border_type not in ["constant", "reflect", "replicate", "wrap", "reflect_without_border"]):
         raise WrongAttribute('The only options for border are "constant", "reflect", "replicate", "wrap", and "reflect_without_border".')
@@ -83,6 +83,6 @@ def dilaton_apply(image: np.ndarray, kernel_size: int = 3, border_type: str = "c
     #finding each element of the filtered image.
     for row in range(image.shape[0]):
         for column in range(image.shape[1]):
-            filtered_image[row, column] = np.max( image_border[row : row + 2 * half_size + 1 , column :column + 2*half_size + 1], axis = (0,1) )
+            filtered_image[row, column] = np.min( image_border[row : row + 2 * half_size + 1 , column :column + 2*half_size + 1], axis = (0,1) )
 
     return filtered_image
