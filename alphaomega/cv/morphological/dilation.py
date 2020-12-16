@@ -62,3 +62,27 @@ class Dilator:
                 filtered_image[row, column] = np.max( image_border[row : row + 2 * half_size + 1 , column :column + 2*half_size + 1], axis = (0,1) )
 
         return filtered_image
+
+
+def dilator_apply(image: np.ndarray, kernel_size: int = 3, border_type: str = "constant") -> np.ndarray:
+    #checking for the correct border_type
+    if (border_type not in ["constant", "reflect", "replicate", "wrap", "reflect_without_border"]):
+        raise WrongAttribute('The only options for border are "constant", "reflect", "replicate", "wrap", and "reflect_without_border".')
+
+    #checking for the correct kernel_size
+    if int(kernel_size) %2 == 0:
+        raise WrongAttribute("Kernel size should be an odd number.")
+
+    #initializing different parameters
+    filtered_image = np.zeros_like(image, dtype=np.int16)
+    half_size      = int((kernel_size-1)/2)
+
+    #applying border to image
+    image_border = border_intropolate_apply(image, half_size, border_type)
+    
+    #finding each element of the filtered image.
+    for row in range(image.shape[0]):
+        for column in range(image.shape[1]):
+            filtered_image[row, column] = np.max( image_border[row : row + 2 * half_size + 1 , column :column + 2*half_size + 1], axis = (0,1) )
+
+    return filtered_image
