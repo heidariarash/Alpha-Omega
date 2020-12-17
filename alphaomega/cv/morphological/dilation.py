@@ -30,7 +30,7 @@ class Dilation:
 
             if key == "kernel_size":
                 if int(value) %2 == 0:
-                    raise WrongAttribute("Kernel size should be an odd number.")
+                    raise WrongDimension("Kernel size should be an odd number.")
                 self.__kernel_size = int(value)
 
             elif key == "border_type":
@@ -64,14 +64,14 @@ class Dilation:
         return filtered_image
 
 
-def dilaton_apply(image: np.ndarray, kernel_size: int = 3, border_type: str = "constant") -> np.ndarray:
+def dilation_apply(image: np.ndarray, kernel_size: int = 3, border_type: str = "constant") -> np.ndarray:
     #checking for the correct border_type
     if (border_type not in ["constant", "reflect", "replicate", "wrap", "reflect_without_border"]):
         raise WrongAttribute('The only options for border are "constant", "reflect", "replicate", "wrap", and "reflect_without_border".')
 
     #checking for the correct kernel_size
     if int(kernel_size) %2 == 0:
-        raise WrongAttribute("Kernel size should be an odd number.")
+        raise WrongDimension("Kernel size should be an odd number.")
 
     #initializing different parameters
     filtered_image = np.zeros_like(image, dtype=np.int16)
