@@ -83,7 +83,7 @@ class CustomFilter:
 
 def custom_filter_apply(image: np.ndarray, kernel: np.ndarray, border_type: str = "constant") -> np.ndarray:
     """
-    Usage: Use this method to apply the CustomFilter to your image.
+    Usage: Use this function to apply a custom filter to your image.
     
     Inputs:
         image: The CustomFilter will be applied on this image.
