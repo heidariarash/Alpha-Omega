@@ -65,6 +65,22 @@ class Erosion:
 
 
 def erosion_apply(image: np.ndarray, kernel_size: int = 3, border_type: str = "constant") -> np.ndarray:
+    """
+    Usage: Use this function to apply erosion on an image.
+
+    Inputs:
+        image      : The erosion will be applied on this image.
+        kernel_size: The size of the kernel.
+        border_type: This parameter determines how to apply filter to the borders. Options are:
+            "constant": default option.
+            "reflect"
+            "replicate"
+            "wrap"
+            "reflect_without_border"
+
+    Returns:
+            - The erosed image.
+    """
     #checking for the correct border_type
     if (border_type not in ["constant", "reflect", "replicate", "wrap", "reflect_without_border"]):
         raise WrongDimension('The only options for border are "constant", "reflect", "replicate", "wrap", and "reflect_without_border".')

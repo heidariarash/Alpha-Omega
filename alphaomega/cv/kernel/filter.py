@@ -82,6 +82,22 @@ class CustomFilter:
 
 
 def custom_filter_apply(image: np.ndarray, kernel: np.ndarray, border_type: str = "constant") -> np.ndarray:
+    """
+    Usage: Use this method to apply the CustomFilter to your image.
+    
+    Inputs:
+        image: The CustomFilter will be applied on this image.
+        kernel      : The kernel to apply.
+        border_type : This parameter determines how to apply filter to the borders. Options are:
+            "constant": default option.
+            "reflect"
+            "replicate"
+            "wrap"
+            "reflect_without_border"
+
+    Returns:
+        - The filtered image.
+    """
     #checking for the correct shape of kenel
     if len(kernel.shape) != 2:
         raise WrongDimension("kernel should be 2 dimensional.")
