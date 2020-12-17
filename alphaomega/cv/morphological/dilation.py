@@ -29,8 +29,8 @@ class Dilation:
         for key, value in kwargs.items():
 
             if key == "kernel_size":
-                if int(value) %2 == 0:
-                    raise WrongDimension("Kernel size should be an odd number.")
+                if int(value) %2 == 0 or int(value) < 1:
+                    raise WrongDimension("Kernel size should be a positive odd number.")
                 self.__kernel_size = int(value)
 
             elif key == "border_type":
@@ -70,8 +70,8 @@ def dilation_apply(image: np.ndarray, kernel_size: int = 3, border_type: str = "
         raise WrongAttribute('The only options for border are "constant", "reflect", "replicate", "wrap", and "reflect_without_border".')
 
     #checking for the correct kernel_size
-    if int(kernel_size) %2 == 0:
-        raise WrongDimension("Kernel size should be an odd number.")
+    if int(kernel_size) %2 == 0 or int(kernel_size) < 1:
+        raise WrongDimension("Kernel size should be a positive odd number.")
 
     #initializing different parameters
     filtered_image = np.zeros_like(image, dtype=np.int16)
