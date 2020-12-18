@@ -400,7 +400,7 @@ def converter_apply(image: np.ndarray, source: str, destination: str) -> np.ndar
     if len(source) != image.shape[2]:
         raise WrongDimension("The number of channels in the image is not equal to the expected number of channels (what you have configured using config method).")
 
-    if (source == image):
+    if (source == destination):
         return image
 
     if source == "RGB":
