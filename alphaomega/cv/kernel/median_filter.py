@@ -187,3 +187,54 @@ class WeightedMedianFilter:
                 filtered_image[row, column] = np.median(np.array(the_list))
 
         return filtered_image
+
+
+def weighted_median_filter_apply(image: np.ndarray, weight_matrix: np.ndarray = np.array([[1,1,1],[1,2,1],[1,1,1]]), border_type:str = "constant") -> np.ndarray:
+    """
+    Usage: Use this function to apply weighted median filter to your image.
+    
+    Inputs:
+        image        : The MedianFilter will be applied on this image.
+        weight_matrix: The matrix which holds the weights of each pixel for calculating the medium.
+        border_type  : This parameter determines how to apply filter to the borders. Options are:
+            "constant": default option.
+            "reflect"
+            "replicate"
+            "wrap"
+            "reflect_without_border"
+
+    Returns:
+        - The smoothed image.
+    """
+    #checking for the correct shape of the weight matrix
+    if len(weight_matrix.shape) != 2:
+        raise WrongDimension("weight matrix should be 2 dimensional.")
+    if weight_matrix.shape[0] % 2 != 1:
+        raise WrongDimension("Dimensions of the weight matrix should be odd (not even).")
+    if weight_matrix.shape[1] % 2 != 1:
+        raise WrongDimension("Dimensions of the weight matrix should be odd (not even).")
+
+    #checking for the border type
+    if (border_type not in ["constant", "reflect", "replicate", "wrap", "reflect_without_border"]):
+        raise WrongAttribute('The only options for border are "constant", "reflect", "replicate", "wrap", and "reflect_without_border".')
+
+    #initializing different parameters
+    filtered_image = np.zeros_like(image, dtype=np.int16)
+    half_size_x    = int((weight_matrix.shape[0]) // 2)
+    half_size_y    = int((weight_matrix.shape[1]) // 2)
+
+    #applying border to image
+    border_intropolate = BorderIntropolation()
+    border_intropolate.config(top = half_size_x, bottom = half_size_x, right = half_size_y, left = half_size_y, border_type = self.__border_type)
+    bordered_image     = border_intropolate.apply(image)
+    
+    #finding each element of the filtered image.
+    for row in range(image.shape[0]):
+        for column in range(image.shape[1]):
+            the_list = []
+            for i in range(weight_matrix.shape[0]):
+                for j in range(weight_matrix.shape[1]):
+                    the_list.extend(weight_matrix[i, j] * [bordered_image[row + i, column + j].tolist()])
+            filtered_image[row, column] = np.median(np.array(the_list))
+
+    return filtered_image
