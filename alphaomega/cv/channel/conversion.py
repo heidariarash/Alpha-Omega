@@ -1,6 +1,6 @@
 import numpy as np
 from alphaomega.cv.channel.channel_merge import channel_merger_apply
-from alphaomega.utils.exceptions import WrongDimension, WrongAttribute
+from alphaomega.utils.exceptions         import WrongDimension, WrongAttribute
 
 class Converter:
     """

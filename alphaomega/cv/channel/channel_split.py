@@ -1,5 +1,5 @@
 import numpy as np
-from typing import Union
+from typing                      import Union
 from alphaomega.utils.exceptions import WrongDimension, WrongAttribute
 
 class ChannelSpliter:

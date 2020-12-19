@@ -1,6 +1,6 @@
 import numpy as np
 from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
-from typing import Union
+from typing                      import Union
 
 class KMeans:
     """

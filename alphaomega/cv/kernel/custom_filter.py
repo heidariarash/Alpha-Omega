@@ -1,7 +1,7 @@
 import numpy as np
-from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
+from alphaomega.utils.exceptions               import WrongAttribute, WrongDimension
 from alphaomega.cv.border.border_intropolation import BorderIntropolation
-from alphaomega.cv.channel.channel_merge import channel_merger_apply
+from alphaomega.cv.channel.channel_merge       import channel_merger_apply
 
 class CustomFilter:
     """

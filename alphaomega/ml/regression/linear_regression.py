@@ -1,6 +1,6 @@
 import numpy as np
 from alphaomega.utils.exceptions import WrongDimension, WrongAttribute
-from typing import Union
+from typing                      import Union
 
 class LinearRegression:
     """

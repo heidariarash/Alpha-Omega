@@ -1,6 +1,6 @@
 import numpy as np
 from alphaomega.cv.border.border_intropolation import border_intropolate_apply
-from alphaomega.utils.exceptions import WrongAttribute
+from alphaomega.utils.exceptions               import WrongAttribute
 
 class MeanFilter:
     """

@@ -1,7 +1,7 @@
 import numpy as np
 from alphaomega.cv.morphological.dilation import dilation_apply
-from alphaomega.cv.morphological.erosion import erosion_apply
-from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
+from alphaomega.cv.morphological.erosion  import erosion_apply
+from alphaomega.utils.exceptions          import WrongAttribute, WrongDimension
 
 class Closing:
     """

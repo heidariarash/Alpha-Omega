@@ -1,7 +1,7 @@
 import numpy as np
 from alphaomega.cv.channel.channel_split import channel_splitter_apply
 from alphaomega.cv.channel.channel_merge import channel_merger_apply
-from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
+from alphaomega.utils.exceptions         import WrongAttribute, WrongDimension
 
 class BorderIntropolation:
     """

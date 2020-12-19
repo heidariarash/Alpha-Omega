@@ -1,5 +1,5 @@
 import numpy as np
-from collections import Counter
+from collections                 import Counter
 from alphaomega.utils.exceptions import WrongAttribute
 
 class KNN:

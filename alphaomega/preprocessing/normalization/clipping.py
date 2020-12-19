@@ -1,5 +1,5 @@
-from typing import Union
 import numpy as np
+from typing                      import Union
 from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
 
 class ClippingNormalizer:
