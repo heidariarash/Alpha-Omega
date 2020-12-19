@@ -1,7 +1,7 @@
 import numpy as np
 from alphaomega.cv.channel.channel_merge import channel_merger_apply
-from alphaomega.utils.exceptions import WrongAttribute
-from alphaomega.cv.kernel.filter import custom_filter_apply
+from alphaomega.utils.exceptions         import WrongAttribute
+from alphaomega.cv.kernel.custom_filter  import custom_filter_apply
 
 class GaussianFilter:
     """

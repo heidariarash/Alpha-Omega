@@ -1,6 +1,6 @@
 import numpy as np
-from alphaomega.cv.kernel.filter import custom_filter_apply
-from alphaomega.utils.exceptions import WrongAttribute, WrongDimension
+from alphaomega.cv.kernel.custom_filter import custom_filter_apply
+from alphaomega.utils.exceptions        import WrongAttribute, WrongDimension
 
 class Sobel:
     """
